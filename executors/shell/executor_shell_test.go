@@ -207,6 +207,31 @@ func TestBuildWithShallowLock(t *testing.T) {
 	})
 }
 
+func TestBuildPullReferences(t *testing.T) {
+	onEachShell(t, func(t *testing.T, shell string) {
+		successfulBuild, err := common.GetSuccessfulBuild()
+		assert.NoError(t, err)
+		build, cleanup := newBuild(t, successfulBuild, shell)
+		defer cleanup()
+
+		build.Runner.PreCloneScript = "echo pre-clone-script"
+		build.Variables = append(build.Variables, common.JobVariable{Key: "GIT_STRATEGY", Value: "fetch"})
+		build.Variables = append(build.Variables, common.JobVariable{Key: "CI_DEBUG_TRACE", Value: "true"})
+
+		out, err := runBuildReturningOutput(t, build)
+		assert.NoError(t, err)
+		assert.Contains(t, out, "Cloning repository")
+		assert.Regexp(t, "Checking out [a-f0-9]+ as", out)
+
+		out, err = runBuildReturningOutput(t, build)
+		assert.NoError(t, err)
+		assert.Contains(t, out, "Fetching changes")
+		assert.Regexp(t, "Checking out [a-f0-9]+ as", out)
+		assert.Contains(t, out, "pre-clone-script")
+		assert.Contains(t, out, "git fetch origin --prune '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*' '+refs/pull/*:refs/remotes/origin/*'")
+	})
+}
+
 func TestBuildWithHeadLock(t *testing.T) {
 	onEachShell(t, func(t *testing.T, shell string) {
 		successfulBuild, err := common.GetSuccessfulBuild()

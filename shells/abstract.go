@@ -120,7 +120,7 @@ func (b *AbstractShell) writeFetchCmd(w ShellWriter, build *common.Build, projec
 		}
 		w.Command("git", "fetch", "--depth", depth, "origin", "--prune", refspec)
 	} else {
-		w.Command("git", "fetch", "origin", "--prune", "+refs/heads/*:refs/remotes/origin/*", "+refs/tags/*:refs/tags/*")
+		w.Command("git", "fetch", "origin", "--prune", "+refs/heads/*:refs/remotes/origin/*", "+refs/tags/*:refs/tags/*", "+refs/pull/*:refs/remotes/origin/*")
 	}
 	w.Else()
 	b.writeCloneCmd(w, build, projectDir)
