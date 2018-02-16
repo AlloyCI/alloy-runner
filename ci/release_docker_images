@@ -69,10 +69,10 @@ push_latest() {
 }
 
 release_docker_helper_images() {
-    helper_image_x86_64="gitlab/gitlab-runner-helper:x86_64-${REVISION}"
-    helper_image_x86_64_latest="gitlab/gitlab-runner-helper:x86_64-latest"
-    helper_image_arm="gitlab/gitlab-runner-helper:arm-${REVISION}"
-    helper_image_arm_latest="gitlab/gitlab-runner-helper:arm-latest"
+    helper_image_x86_64="alloyci/alloy-runner-helper:x86_64-${REVISION}"
+    helper_image_x86_64_latest="alloyci/alloy-runner-helper:x86_64-latest"
+    helper_image_arm="alloyci/alloy-runner-helper:arm-${REVISION}"
+    helper_image_arm_latest="alloyci/alloy-runner-helper:arm-latest"
 
     import out/docker/prebuilt-x86_64.tar.xz ${helper_image_x86_64}
     import out/docker/prebuilt-arm.tar.xz ${helper_image_arm}
@@ -100,50 +100,26 @@ echo "${DOCKER_MACHINE_CHECKSUM}  /usr/bin/docker-machine" >> dockerfiles/checks
 echo "${DUMB_INIT_CHECKSUM}  /usr/bin/dumb-init" >> dockerfiles/checksums
 cat dockerfiles/checksums
 
-cp out/deb/gitlab-runner_amd64.deb dockerfiles/ubuntu/
+cp out/deb/alloy-runner_amd64.deb dockerfiles/ubuntu/
 cp dockerfiles/checksums dockerfiles/ubuntu
-cp out/binaries/gitlab-runner-linux-amd64 dockerfiles/alpine
+cp out/binaries/alloy-runner-linux-amd64 dockerfiles/alpine
 cp dockerfiles/checksums dockerfiles/alpine
 
-pull gitlab/gitlab-runner:ubuntu
-pull gitlab/gitlab-runner:alpine
+pull alloyci/alloy-runner:ubuntu
+pull alloyci/alloy-runner:alpine
 
-build "gitlab/gitlab-runner:ubuntu-${ref_tag}" dockerfiles/ubuntu gitlab/gitlab-runner:ubuntu
-build "gitlab/gitlab-runner:alpine-${ref_tag}" dockerfiles/alpine gitlab/gitlab-runner:alpine
+build "alloyci/alloy-runner:ubuntu-${ref_tag}" dockerfiles/ubuntu alloyci/alloy-runner:ubuntu
+build "alloyci/alloy-runner:alpine-${ref_tag}" dockerfiles/alpine alloyci/alloy-runner:alpine
 
-tag "gitlab/gitlab-runner:ubuntu-${ref_tag}" "gitlab/gitlab-runner:${ref_tag}"
+tag "alloyci/alloy-runner:ubuntu-${ref_tag}" "alloyci/alloy-runner:${ref_tag}"
 
-tag_latest "gitlab/gitlab-runner:ubuntu-${ref_tag}" gitlab/gitlab-runner:ubuntu
-tag_latest "gitlab/gitlab-runner:ubuntu-${ref_tag}" gitlab/gitlab-runner:latest
-tag_latest "gitlab/gitlab-runner:alpine-${ref_tag}" gitlab/gitlab-runner:alpine
+tag_latest "alloyci/alloy-runner:ubuntu-${ref_tag}" alloyci/alloy-runner:ubuntu
+tag_latest "alloyci/alloy-runner:ubuntu-${ref_tag}" alloyci/alloy-runner:latest
+tag_latest "alloyci/alloy-runner:alpine-${ref_tag}" alloyci/alloy-runner:alpine
 
 if [[ -z "${PUBLISH_IMAGES}" ]] || [[ "${PUBLISH_IMAGES}" != "true" ]]; then
     echo "Skipping images pushing"
     exit 0
-fi
-
-if [[ -n "${CI_REGISTRY}" ]] && [[ -n "${CI_REGISTRY_IMAGE}" ]]; then
-    tag "gitlab/gitlab-runner:ubuntu-${ref_tag}" "${CI_REGISTRY_IMAGE}:ubuntu-${ref_tag}"
-    tag "gitlab/gitlab-runner:alpine-${ref_tag}" "${CI_REGISTRY_IMAGE}:alpine-${ref_tag}"
-    tag "gitlab/gitlab-runner:${ref_tag}" "${CI_REGISTRY_IMAGE}:${ref_tag}"
-
-    tag_latest gitlab/gitlab-runner:ubuntu "${CI_REGISTRY_IMAGE}:ubuntu"
-    tag_latest gitlab/gitlab-runner:latest "${CI_REGISTRY_IMAGE}:latest"
-    tag_latest gitlab/gitlab-runner:alpine "${CI_REGISTRY_IMAGE}:alpine"
-
-    if [[ -n "${CI_REGISTRY_USER}" ]] && [[ -n "${CI_REGISTRY_PASSWORD}" ]]; then
-        login "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
-
-        push "${CI_REGISTRY_IMAGE}:ubuntu-${ref_tag}"
-        push "${CI_REGISTRY_IMAGE}:alpine-${ref_tag}"
-        push "${CI_REGISTRY_IMAGE}:${ref_tag}"
-
-        push_latest "${CI_REGISTRY_IMAGE}:ubuntu"
-        push_latest "${CI_REGISTRY_IMAGE}:latest"
-        push_latest "${CI_REGISTRY_IMAGE}:alpine"
-
-        logout "${CI_REGISTRY}"
-    fi
 fi
 
 if [[ -z "${PUSH_TO_DOCKER_HUB}" ]] || [[ "${PUSH_TO_DOCKER_HUB}" != "true" ]]; then
@@ -152,15 +128,17 @@ if [[ -z "${PUSH_TO_DOCKER_HUB}" ]] || [[ "${PUSH_TO_DOCKER_HUB}" != "true" ]]; 
 fi
 
 if [[ -n "${DOCKER_HUB_USER}" ]] && [[ -n "${DOCKER_HUB_PASSWORD}" ]]; then
+    echo "Pushing to Docker Hub"
+    
     login "${DOCKER_HUB_USER}" "${DOCKER_HUB_PASSWORD}"
 
-    push "gitlab/gitlab-runner:ubuntu-${ref_tag}"
-    push "gitlab/gitlab-runner:alpine-${ref_tag}"
-    push "gitlab/gitlab-runner:${ref_tag}"
+    push "alloyci/alloy-runner:ubuntu-${ref_tag}"
+    push "alloyci/alloy-runner:alpine-${ref_tag}"
+    push "alloyci/alloy-runner:${ref_tag}"
 
-    push_latest gitlab/gitlab-runner:ubuntu
-    push_latest gitlab/gitlab-runner:latest
-    push_latest gitlab/gitlab-runner:alpine
+    push_latest alloyci/alloy-runner:ubuntu
+    push_latest alloyci/alloy-runner:latest
+    push_latest alloyci/alloy-runner:alpine
 
     release_docker_helper_images
 

@@ -139,7 +139,7 @@ func (s *RegisterCommand) addRunner(runner *common.RunnerConfig) {
 }
 
 func (s *RegisterCommand) askRunner() {
-	s.URL = s.ask("url", "Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com/):")
+	s.URL = s.ask("url", "Please enter the Alloy CI coordinator URL (e.g. https://alloy-ci.com/):")
 
 	if s.Token != "" {
 		log.Infoln("Token specified trying to verify runner...")
@@ -149,9 +149,9 @@ func (s *RegisterCommand) askRunner() {
 		}
 	} else {
 		// we store registration token as token, since we pass that to RunnerCredentials
-		s.Token = s.ask("registration-token", "Please enter the gitlab-ci token for this runner:")
-		s.Name = s.ask("name", "Please enter the gitlab-ci description for this runner:")
-		s.TagList = s.ask("tag-list", "Please enter the gitlab-ci tags for this runner (comma separated):", true)
+		s.Token = s.ask("registration-token", "Please enter the token for this runner:")
+		s.Name = s.ask("name", "Please enter the description for this runner:")
+		s.TagList = s.ask("tag-list", "Please enter the tags for this runner (comma separated):", true)
 
 		if s.TagList == "" {
 			s.RunUntagged = true

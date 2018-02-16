@@ -1,0 +1,54 @@
+#!/bin/sh
+
+set -e
+
+# detect user: first try to use alloy_ci_multi_runner
+for USER in alloy_ci_multi_runner alloy-runner; do
+  if id -u "$USER" >/dev/null 2>/dev/null; then
+    echo "AlloyCI Runner: detected user $USER"
+    break
+  fi
+done
+
+# create user if doesn't exist: it will create alloy-runner if not found
+if ! id -u "$USER" >/dev/null 2>/dev/null; then
+  echo "AlloyCI Runner: creating $USER..."
+  useradd --system --shell /bin/bash --comment 'AlloyCI Runner' --create-home $USER
+fi
+
+# add user to docker group to allow Docker access (insecure)
+if id -nG "$USER" | grep -q docker; then
+  echo "WARNING: $USER belongs to group docker which is insecure, because allows to have root access to host"
+fi
+
+# get USER home directory
+eval HOMEDIR=~$USER
+
+# create empty config and re-register runner
+mkdir -p /etc/alloy-runner
+chmod 0700 /etc/alloy-runner
+if [ -f $HOMEDIR/config.toml ] && [ ! -f /etc/alloy-runner/config.toml ]; then
+  echo "AlloyCI Runner: importing configuration to /etc/alloy-runner/config.toml"
+  cp $HOMEDIR/config.toml /etc/alloy-runner/config.toml
+  chmod 0600 /etc/alloy-runner/config.toml
+fi
+
+# uninstall old service
+if alloy-runner status --service="alloy-runner"; then
+  alloy-runner stop --service="alloy-runner" >/dev/null 2>/dev/null || :
+  alloy-runner uninstall --service="alloy-runner" >/dev/null 2>/dev/null || :
+fi
+
+# if migrating from pre 10.0.0 installation
+if alloy-runner status --service="alloy-ci-multi-runner"; then
+  alloy-runner stop --service="alloy-ci-multi-runner" >/dev/null 2>/dev/null || :
+  alloy-runner uninstall --service="alloy-ci-multi-runner" >/dev/null 2>/dev/null || :
+fi
+
+# re-register runner
+alloy-runner stop >/dev/null 2>/dev/null || :
+alloy-runner uninstall >/dev/null 2>/dev/null || :
+alloy-runner install --user=$USER --working-directory=$HOMEDIR
+
+# start runner service
+alloy-runner start || :

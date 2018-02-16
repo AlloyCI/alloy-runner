@@ -37,13 +37,13 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = path.Base(os.Args[0])
-	app.Usage = "a GitLab Runner"
+	app.Usage = "an Alloy Runner"
 	app.Version = common.AppVersion.ShortLine()
 	cli.VersionPrinter = common.AppVersion.Printer
 	app.Authors = []cli.Author{
 		{
-			Name:  "GitLab Inc.",
-			Email: "support@gitlab.com",
+			Name:  "Patricio Cano",
+			Email: "admin@alloy-ci.com",
 		},
 	}
 	cli_helpers.LogRuntimePlatform(app)

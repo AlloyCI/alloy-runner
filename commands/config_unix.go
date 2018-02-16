@@ -11,9 +11,9 @@ import (
 
 func getDefaultConfigDirectory() string {
 	if os.Getuid() == 0 {
-		return "/etc/gitlab-runner"
+		return "/etc/alloy-runner"
 	} else if homeDir := helpers.GetHomeDir(); homeDir != "" {
-		return filepath.Join(homeDir, ".gitlab-runner")
+		return filepath.Join(homeDir, ".alloy-runner")
 	} else if currentDir := helpers.GetCurrentWorkingDirectory(); currentDir != "" {
 		return currentDir
 	}

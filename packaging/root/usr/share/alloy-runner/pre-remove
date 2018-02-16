@@ -1,0 +1,5 @@
+#!/bin/sh
+
+alloy-runner stop >/dev/null 2>/dev/null
+alloy-runner uninstall >/dev/null 2>/dev/null
+exit 0

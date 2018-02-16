@@ -39,16 +39,16 @@ func userModeWarning(withRun bool) {
 	if withRun {
 		if noServices {
 			logrus.Warningln("You need to manually start builds processing:")
-			logrus.Warningln("$ gitlab-runner run")
+			logrus.Warningln("$ alloy-runner run")
 		} else if noUserService {
 			logrus.Warningln("The user-mode requires you to manually start builds processing:")
-			logrus.Warningln("$ gitlab-runner run")
+			logrus.Warningln("$ alloy-runner run")
 		}
 	}
 
 	if !systemMode {
 		logrus.Warningln("Use sudo for system-mode:")
-		logrus.Warningln("$ sudo gitlab-runner...")
+		logrus.Warningln("$ sudo alloy-runner...")
 	}
 	logrus.Infoln("")
 }

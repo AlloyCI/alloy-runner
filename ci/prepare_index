@@ -106,7 +106,7 @@ EOS
   end
 end
 
-ReleaseIndexer.new('GitLab Runner',
+ReleaseIndexer.new('AlloyCI Runner',
                    "#{ENV['CI_PROJECT_URL']}/tree/#{ENV['CI_COMMIT_REF_NAME']}",
                    ENV['VERSION'],
                    ENV['CI_COMMIT_SHA'],

@@ -1,6 +1,6 @@
 FROM alpine
 
-RUN adduser -D -S -h /home/gitlab-runner gitlab-runner
+RUN adduser -D -S -h /home/alloy-runner alloy-runner
 
 RUN apk add --update \
     bash \
@@ -13,13 +13,13 @@ RUN apk add --update \
 ARG DOCKER_MACHINE_VERSION=0.13.0
 ARG DUMB_INIT_VERSION=1.0.2
 
-COPY gitlab-runner-linux-amd64 /usr/bin/gitlab-runner
+COPY alloy-runner-linux-amd64 /usr/bin/alloy-runner
 COPY checksums /tmp/
-RUN chmod +x /usr/bin/gitlab-runner && \
-    ln -s /usr/bin/gitlab-runner /usr/bin/gitlab-ci-multi-runner && \
-    gitlab-runner --version && \
-    mkdir -p /etc/gitlab-runner/certs && \
-    chmod -R 700 /etc/gitlab-runner && \
+RUN chmod +x /usr/bin/alloy-runner && \
+    ln -s /usr/bin/alloy-runner /usr/bin/alloy-ci-multi-runner && \
+    alloy-runner --version && \
+    mkdir -p /etc/alloy-runner/certs && \
+    chmod -R 700 /etc/alloy-runner && \
     wget -q https://github.com/docker/machine/releases/download/v${DOCKER_MACHINE_VERSION}/docker-machine-Linux-x86_64 -O /usr/bin/docker-machine && \
     chmod +x /usr/bin/docker-machine && \
     docker-machine --version && \
@@ -31,6 +31,6 @@ RUN chmod +x /usr/bin/gitlab-runner && \
 COPY entrypoint /
 RUN chmod +x /entrypoint
 
-VOLUME ["/etc/gitlab-runner", "/home/gitlab-runner"]
+VOLUME ["/etc/alloy-runner", "/home/alloy-runner"]
 ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint"]
-CMD ["run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
+CMD ["run", "--user=alloy-runner", "--working-directory=/home/alloy-runner"]

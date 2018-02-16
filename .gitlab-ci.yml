@@ -13,15 +13,7 @@ variables:
 
 image: $CI_IMAGE
 
-# Skip all jobs except the ones that begin and end with 'docs'.
-# Used for commits including ONLY documentation changes.
-# https://docs.gitlab.com/ce/development/writing_documentation.html#testing
-.except_docs: &except_docs
-  except:
-  - /(^docs[\/-].*|.*-docs$)/
-
 .docker: &docker
-  <<: *except_docs
   services:
   - docker:dind
   variables: &docker_variables
@@ -77,7 +69,6 @@ bindata:
     expire_in: 7d
 
 clone test repo:
-  <<: *except_docs
   stage: prebuild
   script:
   - mkdir tmp
@@ -89,56 +80,11 @@ clone test repo:
     - tmp/gitlab-test
     expire_in: 7d
 
-# Review docs base
-.review-docs: &review-docs
-  image: ruby:2.4-alpine
-  before_script:
-    - gem install gitlab --no-doc
-    # We need to download the script rather than clone the repo since the
-    # review-docs-cleanup job will not be able to run when the branch gets
-    # deleted (when merging the MR).
-    - apk add --update openssl
-    - wget https://gitlab.com/gitlab-org/gitlab-ce/raw/master/scripts/trigger-build-docs
-    - chmod 755 trigger-build-docs
-  cache: {}
-  dependencies: []
-  variables:
-    GIT_STRATEGY: none
-  when: manual
-  only:
-    - branches
-
-# Trigger a docs build in gitlab-docs
-# Useful to preview the docs changes live
-# https://docs.gitlab.com/ee/development/writing_documentation.html#previewing-the-changes-live
-review-docs-deploy:
-  <<: *review-docs
-  stage: prebuild
-  environment:
-    name: review-docs/$CI_COMMIT_REF_NAME
-    # DOCS_REVIEW_APPS_DOMAIN and DOCS_GITLAB_REPO_SUFFIX are secret variables
-    # Discussion: https://gitlab.com/gitlab-org/gitlab-ce/merge_requests/14236/diffs#note_40140693
-    url: http://$DOCS_GITLAB_REPO_SUFFIX-$CI_COMMIT_REF_SLUG.$DOCS_REVIEW_APPS_DOMAIN/$DOCS_GITLAB_REPO_SUFFIX
-    on_stop: review-docs-cleanup
-  script:
-    - ./trigger-build-docs deploy
-
-# Cleanup remote environment of gitlab-docs
-review-docs-cleanup:
-  <<: *review-docs
-  stage: cleanup
-  environment:
-    name: review-docs/$CI_COMMIT_REF_NAME
-    action: stop
-  script:
-    - ./trigger-build-docs cleanup
-
 #
 # Test stage
 #
 
 codequality:
-  <<: *except_docs
   stage: test
   image: docker:git
   services:
@@ -169,43 +115,6 @@ unit tests:
     - source ci/touch_make_dependencies
     - CGO_ENABLED=1 TESTFLAGS="-cover -race" make test
 
-docs check links:
-  image: "registry.gitlab.com/gitlab-org/gitlab-build-images:nanoc-bootstrap-ruby-2.4-alpine"
-  stage: test
-  cache: {}
-  dependencies: []
-  before_script: []
-  script:
-    - mv docs/ /nanoc/content/
-    - cd /nanoc
-    # Build HTML from Markdown
-    - bundle exec nanoc
-    # Check the internal links
-    - bundle exec nanoc check internal_links
-
-integration windows:
-  <<: *except_docs
-  stage: test
-  before_script:
-  - $GODIR = "$env:GOPATH\src\gitlab.com\gitlab-org"
-  - $target_path = "$GODIR\gitlab-runner"
-  - $current_path = pwd
-  - md $GODIR -Force
-  - if (Test-Path $target_path) { cmd /c rmdir $target_path }
-  - cmd /c mklink /D $target_path $current_path
-  - cd $GODIR\gitlab-runner
-  script:
-  - $packages = (go list ./... | findstr -v "\/vendor\/" | Out-String | %{$_ -replace "\r\n"," "})
-  - $testCommand = "go test $packages"
-  - Invoke-Expression $testCommand
-  - if ( $LASTEXITCODE -ne 0 ) { exit $LASTEXITCODE }
-  allow_failure: true
-  only:
-  - /.*/@gitlab-org/gitlab-runner
-  tags:
-  - integration
-  - windows
-
 race conditions detector:
   <<: *docker
   stage: test
@@ -214,7 +123,6 @@ race conditions detector:
   - make check_race_conditions
 
 git 1.7.1:
-  <<: *except_docs
   image: centos:6
   stage: test
   variables:
@@ -235,7 +143,6 @@ git 1.7.1:
 #
 
 .binaries: &binaries
-  <<: *except_docs
   stage: build
   script:
   - source ci/touch_make_dependencies
@@ -258,7 +165,6 @@ binaries windows/386 windows/amd64: *binaries
 #
 
 .packages: &packages
-  <<: *except_docs
   stage: package
   script:
   - mkdir -p out/docker
@@ -287,6 +193,7 @@ package-rpm: *packages
   stage: release
   variables: &release_docker_images_variables
     <<: *docker_variables
+    CI_REGISTRY_IMAGE: "alloyci/alloy-runner"
     PUBLISH_IMAGES: "true"
     PUSH_TO_DOCKER_HUB: "true"
     DOCKER_MACHINE_VERSION: "0.13.0"
@@ -297,15 +204,14 @@ package-rpm: *packages
   - source ci/touch_make_dependencies
   - make release_docker_images
   tags:
-  - release
+  - docker
 
 .release: &release
-  <<: *except_docs
   stage: release
   before_script:
   - source ci/touch_make_dependencies
   tags:
-  - release
+  - docker
 
 .release_s3: &release_s3
   <<: *release
@@ -317,81 +223,56 @@ package-rpm: *packages
   script:
   - make release_packagecloud
 
-.release_development: &release_development
-  only:
-  - branches@gitlab-org/gitlab-runner
-  except:
-  - master@gitlab-org/gitlab-runner
-  - /(^docs[\/-].*|.*-docs$)/
-
 .release_bleeding_edge: &release_bleeding_edge
   only:
-  - master@gitlab-org/gitlab-runner
-  - /\Av[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+\Z/@gitlab-org/gitlab-runner
+  - master
 
 .release_stable: &release_stable
   only:
-  - /\Av[0-9]+\.[0-9]+\.[0-9]+\Z/@gitlab-org/gitlab-runner
-
-development S3:
-  <<: *release_s3
-  <<: *release_development
-  environment:
-    name: development/s3/${CI_COMMIT_REF_NAME}
-    url: https://gitlab-runner-downloads.s3.amazonaws.com/${CI_COMMIT_REF_NAME}/index.html
-
-development docker images:
-  <<: *release_docker_images
-  variables:
-    <<: *release_docker_images_variables
-    PUBLISH_IMAGES: "false"
-    PUSH_TO_DOCKER_HUB: "false"
-  only:
-  - branches
-  except:
-  - master
-  - /(^docs[\/-].*|.*-docs$)/
-  tags:
-  - docker
+  - /\Av[0-9]+\.[0-9]+\.[0-9]+\Z/
 
 bleeding edge S3:
   <<: *release_s3
   <<: *release_bleeding_edge
   environment:
     name: bleeding_edge/s3
-    url: https://gitlab-runner-downloads.s3.amazonaws.com/${CI_COMMIT_REF_NAME}/index.html
+    url: https://alloyci-runner-downloads.s3.amazonaws.com/${CI_COMMIT_REF_NAME}/index.html
 
 bleeding edge packagecloud:
   <<: *release_packagecloud
   <<: *release_bleeding_edge
+  variables:
+    PACKAGE_CLOUD: alloyci/alloy-runner-unstable
   environment:
     name: bleeding_edge/packagecloud
-    url: https://packages.gitlab.com/runner/unstable
+    url: https://packagecloud.io/alloyci/alloy-runner-unstable
 
 bleeding edge docker images:
   <<: *release_docker_images
   <<: *release_bleeding_edge
   environment:
     name: bleeding_edge/docker_images
-    url: https://hub.docker.com/r/gitlab/gitlab-runner/tags/
+    url: https://hub.docker.com/r/alloyci/alloy-runner/tags/
 
 stable S3:
   <<: *release_s3
   <<: *release_stable
   environment:
     name: stable/s3
-    url: https://gitlab-runner-downloads.s3.amazonaws.com/${CI_COMMIT_REF_NAME}/index.html
+    url: https://alloyci-runner-downloads.s3.amazonaws.com/${CI_COMMIT_REF_NAME}/index.html
 
 stable packagecloud:
   <<: *release_packagecloud
   <<: *release_stable
+  variables:
+    PACKAGE_CLOUD: alloyci/alloy-runner
   environment:
     name: stable/packagecloud
-    url: https://packages.gitlab.com/runner/gitlab-runner
+    url: https://packagecloud.io/alloyci/alloy-runner
 
 stable docker images:
   <<: *release_docker_images
   <<: *release_stable
   environment:
-      name: stable/docker_images
-      url: https://hub.docker.com/r/gitlab/gitlab-runner/tags/
+    name: stable/docker_images
+    url: https://hub.docker.com/r/alloyci/alloy-runner/tags/

@@ -1,0 +1,449 @@
+{
+  "stages": [
+    "prepare",
+    "prebuild",
+    "test",
+    "build",
+    "package",
+    "release"
+  ],
+  "variables": {
+    "CI_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/ci:1.8-1",
+    "GOROOT": "/usr/local/go"
+  },
+  "image": "$CI_IMAGE",
+  "prepare ci image": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "BUILD_IMAGE": "$CI_IMAGE",
+      "BUILD_DOCKERFILE": "./dockerfiles/ci/Dockerfile"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "prepare",
+    "image": "docker:git",
+    "script": [
+      "source ./ci/build_ci_image"
+    ],
+    "only": [
+      "\\Adocker-ci-image\\/.*"
+    ]
+  },
+  "prepare alpine-no-root image": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "BUILD_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/alpine-no-root:latest",
+      "BUILD_DOCKERFILE": "./tests/dockerfiles/alpine-no-root/Dockerfile"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "prepare",
+    "image": "docker:git",
+    "script": [
+      "source ./ci/build_ci_image"
+    ],
+    "only": [
+      "\\Adocker-alpine-no-root-image\\/.*"
+    ]
+  },
+  "bindata": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "CI_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/ci:1.8-1",
+      "DOCKER_DRIVER": "overlay",
+      "DOCKER_HOST": "tcp://docker:2375"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "prebuild",
+    "script": [
+      "make docker"
+    ],
+    "artifacts": {
+      "paths": [
+        "out/docker/prebuilt-x86_64.tar.xz",
+        "out/docker/prebuilt-arm.tar.xz",
+        "executors/docker/bindata.go",
+        ".gopath/bin",
+        ".gopath/.ok"
+      ],
+      "expire_in": "7d"
+    }
+  },
+  "clone test repo": {
+    "stage": "prebuild",
+    "script": [
+      "mkdir tmp",
+      "succeed=0",
+      "for i in {1..3}; do git clone https://gitlab.com/gitlab-org/gitlab-test.git tmp/gitlab-test && succeed=1 && break; echo \"retrying\"; done",
+      "[[ \"$succeed\" -eq 1 ]]"
+    ],
+    "artifacts": {
+      "paths": [
+        "tmp/gitlab-test"
+      ],
+      "expire_in": "7d"
+    }
+  },
+  "codequality": {
+    "stage": "test",
+    "image": "docker:git",
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "DOCKER_DRIVER": "overlay2",
+      "CODECLIMATE_FORMAT": "json"
+    },
+    "cache": {},
+    "dependencies": [],
+    "script": [
+      "./scripts/codequality analyze -f json --dev | tee codeclimate.json"
+    ],
+    "artifacts": {
+      "paths": [
+        "codeclimate.json"
+      ],
+      "expire_in": "1 week"
+    }
+  },
+  "unit tests (no race)": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "CI_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/ci:1.8-1",
+      "DOCKER_DRIVER": "overlay",
+      "DOCKER_HOST": "tcp://docker:2375"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "test",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "make test"
+    ]
+  },
+  "unit tests": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "CI_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/ci:1.8-1",
+      "DOCKER_DRIVER": "overlay",
+      "DOCKER_HOST": "tcp://docker:2375"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "test",
+    "allow_failure": true,
+    "script": [
+      "source ci/touch_make_dependencies",
+      "CGO_ENABLED=1 TESTFLAGS=\"-cover -race\" make test"
+    ]
+  },
+  "race conditions detector": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "CI_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/ci:1.8-1",
+      "DOCKER_DRIVER": "overlay",
+      "DOCKER_HOST": "tcp://docker:2375"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "test",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "make check_race_conditions"
+    ]
+  },
+  "git 1.7.1": {
+    "image": "centos:6",
+    "stage": "test",
+    "variables": {
+      "GOROOT": "/usr/local/go",
+      "GOPATH": "/go",
+      "CGO_ENABLED": "0",
+      "OUR_PACKAGES": "gitlab.com/gitlab-org/gitlab-runner/executors/shell gitlab.com/gitlab-org/gitlab-runner/shells"
+    },
+    "before_script": [
+      "yum install -y -q git && git version",
+      "curl https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz | tar zx -C $(dirname \"$GOROOT\")",
+      "export PATH=${GOROOT}/bin:$PATH",
+      "source ci/touch_make_dependencies"
+    ],
+    "script": [
+      "make test"
+    ]
+  },
+  "binaries darwin/386 darwin/amd64": {
+    "stage": "build",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "export platforms=$(echo $CI_JOB_NAME | sed 's|binaries ||')",
+      "make build BUILD_PLATFORMS=\"-osarch='$platforms'\""
+    ],
+    "artifacts": {
+      "paths": [
+        "out/binaries/"
+      ],
+      "expire_in": "7d"
+    },
+    "tags": [
+      "docker"
+    ]
+  },
+  "binaries freebsd/386 freebsd/amd64 freebsd/arm": {
+    "stage": "build",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "export platforms=$(echo $CI_JOB_NAME | sed 's|binaries ||')",
+      "make build BUILD_PLATFORMS=\"-osarch='$platforms'\""
+    ],
+    "artifacts": {
+      "paths": [
+        "out/binaries/"
+      ],
+      "expire_in": "7d"
+    },
+    "tags": [
+      "docker"
+    ]
+  },
+  "binaries linux/386 linux/amd64 linux/arm": {
+    "stage": "build",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "export platforms=$(echo $CI_JOB_NAME | sed 's|binaries ||')",
+      "make build BUILD_PLATFORMS=\"-osarch='$platforms'\""
+    ],
+    "artifacts": {
+      "paths": [
+        "out/binaries/"
+      ],
+      "expire_in": "7d"
+    },
+    "tags": [
+      "docker"
+    ]
+  },
+  "binaries windows/386 windows/amd64": {
+    "stage": "build",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "export platforms=$(echo $CI_JOB_NAME | sed 's|binaries ||')",
+      "make build BUILD_PLATFORMS=\"-osarch='$platforms'\""
+    ],
+    "artifacts": {
+      "paths": [
+        "out/binaries/"
+      ],
+      "expire_in": "7d"
+    },
+    "tags": [
+      "docker"
+    ]
+  },
+  "package-deb": {
+    "stage": "package",
+    "script": [
+      "mkdir -p out/docker",
+      "touch out/docker/prebuilt-x86_64.tar.xz",
+      "touch out/docker/prebuilt-arm.tar.xz",
+      "touch executors/docker/bindata.go",
+      "source ci/touch_make_dependencies",
+      "make ${CI_JOB_NAME}"
+    ],
+    "artifacts": {
+      "paths": [
+        "out/deb/",
+        "out/rpm/"
+      ],
+      "expire_in": "7d"
+    },
+    "tags": [
+      "docker"
+    ]
+  },
+  "package-rpm": {
+    "stage": "package",
+    "script": [
+      "mkdir -p out/docker",
+      "touch out/docker/prebuilt-x86_64.tar.xz",
+      "touch out/docker/prebuilt-arm.tar.xz",
+      "touch executors/docker/bindata.go",
+      "source ci/touch_make_dependencies",
+      "make ${CI_JOB_NAME}"
+    ],
+    "artifacts": {
+      "paths": [
+        "out/deb/",
+        "out/rpm/"
+      ],
+      "expire_in": "7d"
+    },
+    "tags": [
+      "docker"
+    ]
+  },
+  "bleeding edge S3": {
+    "stage": "release",
+    "before_script": [
+      "source ci/touch_make_dependencies"
+    ],
+    "tags": [
+      "docker"
+    ],
+    "script": [
+      "make release_s3"
+    ],
+    "only": [
+      "master"
+    ],
+    "environment": {
+      "name": "bleeding_edge/s3",
+      "url": "https://alloyci-runner-downloads.s3.amazonaws.com/${CI_COMMIT_REF_NAME}/index.html"
+    }
+  },
+  "bleeding edge packagecloud": {
+    "stage": "release",
+    "before_script": [
+      "source ci/touch_make_dependencies"
+    ],
+    "tags": [
+      "docker"
+    ],
+    "script": [
+      "make release_packagecloud"
+    ],
+    "only": [
+      "master"
+    ],
+    "variables": {
+      "PACKAGE_CLOUD": "alloyci/alloy-runner-unstable"
+    },
+    "environment": {
+      "name": "bleeding_edge/packagecloud",
+      "url": "https://packagecloud.io/alloyci/alloy-runner-unstable"
+    }
+  },
+  "bleeding edge docker images": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "CI_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/ci:1.8-1",
+      "DOCKER_DRIVER": "overlay",
+      "DOCKER_HOST": "tcp://docker:2375",
+      "CI_REGISTRY_IMAGE": "alloyci/alloy-runner",
+      "PUBLISH_IMAGES": "true",
+      "PUSH_TO_DOCKER_HUB": "true",
+      "DOCKER_MACHINE_VERSION": "0.13.0",
+      "DOCKER_MACHINE_CHECKSUM": "8f5310eb9e04e71b44c80c0ccebd8a85be56266b4170b4a6ac6223f7b5640df9",
+      "DUMB_INIT_VERSION": "1.0.2",
+      "DUMB_INIT_CHECKSUM": "a8defac40aaca2ca0896c7c5adbc241af60c7c3df470c1a4c469a860bd805429"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "release",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "make release_docker_images"
+    ],
+    "only": [
+      "master"
+    ],
+    "environment": {
+      "name": "bleeding_edge/docker_images",
+      "url": "https://hub.docker.com/r/alloyci/alloy-runner/tags/"
+    }
+  },
+  "stable S3": {
+    "stage": "release",
+    "before_script": [
+      "source ci/touch_make_dependencies"
+    ],
+    "tags": [
+      "docker"
+    ],
+    "script": [
+      "make release_s3"
+    ],
+    "only": [
+      "\\Av[0-9]+\\.[0-9]+\\.[0-9]+\\Z"
+    ],
+    "environment": {
+      "name": "stable/s3",
+      "url": "https://alloyci-runner-downloads.s3.amazonaws.com/${CI_COMMIT_REF_NAME}/index.html"
+    }
+  },
+  "stable packagecloud": {
+    "stage": "release",
+    "before_script": [
+      "source ci/touch_make_dependencies"
+    ],
+    "tags": [
+      "docker"
+    ],
+    "script": [
+      "make release_packagecloud"
+    ],
+    "only": [
+      "\\Av[0-9]+\\.[0-9]+\\.[0-9]+\\Z"
+    ],
+    "variables": {
+      "PACKAGE_CLOUD": "alloyci/alloy-runner"
+    },
+    "environment": {
+      "name": "stable/packagecloud",
+      "url": "https://packagecloud.io/alloyci/alloy-runner"
+    }
+  },
+  "stable docker images": {
+    "services": [
+      "docker:dind"
+    ],
+    "variables": {
+      "CI_IMAGE": "registry.gitlab.com/gitlab-org/gitlab-runner/ci:1.8-1",
+      "DOCKER_DRIVER": "overlay",
+      "DOCKER_HOST": "tcp://docker:2375",
+      "CI_REGISTRY_IMAGE": "alloyci/alloy-runner",
+      "PUBLISH_IMAGES": "true",
+      "PUSH_TO_DOCKER_HUB": "true",
+      "DOCKER_MACHINE_VERSION": "0.13.0",
+      "DOCKER_MACHINE_CHECKSUM": "8f5310eb9e04e71b44c80c0ccebd8a85be56266b4170b4a6ac6223f7b5640df9",
+      "DUMB_INIT_VERSION": "1.0.2",
+      "DUMB_INIT_CHECKSUM": "a8defac40aaca2ca0896c7c5adbc241af60c7c3df470c1a4c469a860bd805429"
+    },
+    "tags": [
+      "docker"
+    ],
+    "stage": "release",
+    "script": [
+      "source ci/touch_make_dependencies",
+      "make release_docker_images"
+    ],
+    "only": [
+      "\\Av[0-9]+\\.[0-9]+\\.[0-9]+\\Z"
+    ],
+    "environment": {
+      "name": "stable/docker_images",
+      "url": "https://hub.docker.com/r/alloyci/alloy-runner/tags/"
+    }
+  }
+}

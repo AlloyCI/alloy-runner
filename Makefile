@@ -1,4 +1,4 @@
-NAME ?= gitlab-runner
+NAME ?= alloy-runner
 PACKAGE_NAME ?= $(NAME)
 export VERSION := $(shell ./ci/version)
 REVISION := $(shell git rev-parse --short=8 HEAD || echo unknown)
@@ -12,7 +12,7 @@ ifeq ($(shell git describe --exact-match --match $(LATEST_STABLE_TAG) >/dev/null
 export IS_LATEST := true
 endif
 
-PACKAGE_CLOUD ?= ayufan/gitlab-ci-multi-runner
+PACKAGE_CLOUD ?= alloyci/alloy-runner
 PACKAGE_CLOUD_URL ?= https://packagecloud.io/
 BUILD_PLATFORMS ?= -os '!netbsd' -os '!openbsd'
 S3_UPLOAD_PATH ?= master
@@ -27,7 +27,7 @@ RPM_PLATFORMS ?= el/6 el/7 \
     fedora/25 fedora/26
 RPM_ARCHS ?= x86_64 i686 arm armhf
 
-PKG = gitlab.com/gitlab-org/$(PACKAGE_NAME)
+PKG = gitlab.com/gitlab-org/gitlab-runner
 COMMON_PACKAGE_NAMESPACE=$(PKG)/common
 
 BUILD_DIR := $(CURDIR)
@@ -72,7 +72,7 @@ help:
 	# make version - show information about current version
 	#
 	# Development commands:
-	# make install - install the version suitable for your OS as gitlab-runner
+	# make install - install the version suitable for your OS as alloy-runner
 	# make docker - build docker dependencies
 	#
 	# Testing commands:
@@ -230,7 +230,7 @@ build-and-deploy:
 
 build-and-deploy-binary:
 	make build BUILD_PLATFORMS="-os=linux -arch=amd64"
-	scp out/binaries/$(PACKAGE_NAME)-linux-amd64 $(SERVER):/usr/bin/gitlab-runner
+	scp out/binaries/$(PACKAGE_NAME)-linux-amd64 $(SERVER):/usr/bin/alloy-runner
 
 package: package-deps package-prepare package-deb package-rpm
 
@@ -239,8 +239,8 @@ package-deps:
 	gem install rake fpm --no-ri --no-rdoc
 
 package-prepare:
-	chmod 755 packaging/root/usr/share/gitlab-runner/
-	chmod 755 packaging/root/usr/share/gitlab-runner/*
+	chmod 755 packaging/root/usr/share/alloy-runner/
+	chmod 755 packaging/root/usr/share/alloy-runner/*
 
 package-deb: package-deps package-prepare
 	# Building Debian compatible packages...
@@ -265,16 +265,16 @@ package-deb-fpm:
 		--deb-compression bzip2 \
 		--after-install packaging/scripts/postinst.deb \
 		--before-remove packaging/scripts/prerm.deb \
-		--url https://gitlab.com/gitlab-org/gitlab-runner \
-		--description "GitLab Runner" \
-		-m "GitLab Inc. <support@gitlab.com>" \
+		--url https://gitlab.com/AlloyCI/alloy-runner \
+		--description "AlloyCI Runner" \
+		-m "AlloyCI <support@alloy-ci.com>" \
 		--license "MIT" \
-		--vendor "GitLab Inc." \
+		--vendor "Insomniware LLC" \
 		--conflicts $(PACKAGE_NAME)-beta \
-		--conflicts gitlab-ci-multi-runner \
-		--conflicts gitlab-ci-multi-runner-beta \
-		--provides gitlab-ci-multi-runner \
-		--replaces gitlab-ci-multi-runner \
+		--conflicts alloy-ci-multi-runner \
+		--conflicts alloy-ci-multi-runner-beta \
+		--provides alloy-ci-multi-runner \
+		--replaces alloy-ci-multi-runner \
 		--depends ca-certificates \
 		--depends git \
 		--depends curl \
@@ -282,7 +282,7 @@ package-deb-fpm:
 		--deb-suggests docker-engine \
 		-a $(PACKAGE_ARCH) \
 		packaging/root/=/ \
-		out/binaries/$(NAME)-linux-$(ARCH)=/usr/bin/gitlab-runner
+		out/binaries/$(NAME)-linux-$(ARCH)=/usr/bin/alloy-runner
 
 package-rpm-fpm:
 	@mkdir -p out/rpm/
@@ -292,22 +292,22 @@ package-rpm-fpm:
 		--force \
 		--after-install packaging/scripts/postinst.rpm \
 		--before-remove packaging/scripts/prerm.rpm \
-		--url https://gitlab.com/gitlab-org/gitlab-runner \
-		--description "GitLab Runner" \
-		-m "GitLab Inc. <support@gitlab.com>" \
+		--url https://gitlab.com/gitlab-org/alloy-runner \
+		--description "AlloyCI Runner" \
+		-m "AlloyCI <support@alloy-ci.com>" \
 		--license "MIT" \
-		--vendor "GitLab Inc." \
+		--vendor "Insomniware LLC" \
 		--conflicts $(PACKAGE_NAME)-beta \
-		--conflicts gitlab-ci-multi-runner \
-		--conflicts gitlab-ci-multi-runner-beta \
-		--provides gitlab-ci-multi-runner \
-		--replaces gitlab-ci-multi-runner \
+		--conflicts alloy-ci-multi-runner \
+		--conflicts alloy-ci-multi-runner-beta \
+		--provides alloy-ci-multi-runner \
+		--replaces alloy-ci-multi-runner \
 		--depends git \
 		--depends curl \
 		--depends tar \
 		-a $(PACKAGE_ARCH) \
 		packaging/root/=/ \
-		out/binaries/$(NAME)-linux-$(ARCH)=/usr/bin/gitlab-runner
+		out/binaries/$(NAME)-linux-$(ARCH)=/usr/bin/alloy-runner
 
 packagecloud: packagecloud-deps packagecloud-deb packagecloud-rpm
 

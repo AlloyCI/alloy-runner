@@ -11,15 +11,15 @@ RUN git fetch --tags || true
 # Build development version
 ENV BUILD_PLATFORMS -osarch=linux/amd64
 RUN make && \
-	ln -s $(pwd)/out/binaries/gitlab-runner-linux-amd64 /usr/bin/gitlab-ci-multi-runner && \
-	ln -s $(pwd)/out/binaries/gitlab-runner-linux-amd64 /usr/bin/gitlab-runner
+	ln -s $(pwd)/out/binaries/alloy-runner-linux-amd64 /usr/bin/alloy-ci-multi-runner && \
+	ln -s $(pwd)/out/binaries/alloy-runner-linux-amd64 /usr/bin/alloy-runner
 
 # Install runner
-RUN packaging/root/usr/share/gitlab-runner/post-install
+RUN packaging/root/usr/share/alloy-runner/post-install
 
 # Preserve runner's data
-VOLUME ["/etc/gitlab-runner", "/home/gitlab-runner"]
+VOLUME ["/etc/alloy-runner", "/home/alloy-runner"]
 
 # init sets up the environment and launches gitlab-runner
-CMD ["run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
-ENTRYPOINT ["/usr/bin/gitlab-runner"]
+CMD ["run", "--user=alloy-runner", "--working-directory=/home/alloy-runner"]
+ENTRYPOINT ["/usr/bin/alloy-runner"]
