@@ -1,19 +1,17 @@
-# Install and configure GitLab Runner for autoscaling
-
-> The auto scale feature was introduced in GitLab Runner 1.1.0.
+# Install and configure AlloyCI Runner for autoscaling
 
 For an overview of the auto-scale architecture, take a look at the
 [comprehensive documentation on autoscaling](../configuration/autoscale.md).
 
 ## Prepare the environment
 
-In order to use the auto-scale feature, Docker and GitLab Runner must be
+In order to use the auto-scale feature, Docker and AlloyCI Runner must be
 installed in the same machine:
 
 1. Login to a new Linux-based machine that will serve as a bastion server and
    where Docker will spawn new machines from
-1. Install GitLab Runner following the
-  [GitLab Runner installation documentation][runner-installation]
+1. Install AlloyCI Runner following the
+  [AlloyCI Runner installation documentation][runner-installation]
 1. Install Docker Machine following the
   [Docker Machine installation documentation][docker-machine-installation]
 
@@ -87,22 +85,22 @@ more in [Distributed runners caching][caching].
    bucket then it will be different
 1. All caches will be stored in the `/export` directory
 
-## Configure GitLab Runner
+## Configure AlloyCI Runner
 
-1. Register a GitLab Runner, selecting the `docker+machine` executor (Look into [runners documentation](http://doc.gitlab.com/ce/ci/runners/README.html) to learn how to obtain a token):
+1. Register a AlloyCI Runner, selecting the `docker+machine` executor (Look into [runners documentation](../README.md) to learn how to obtain a token):
 
     ```bash
-    sudo gitlab-runner register
+    sudo alloy-runner register
     ```
 
     Example output:
 
     ```bash
-    Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com )
-    https://gitlab.com
-    Please enter the gitlab-ci token for this runner
+    Please enter the coordinator URL (e.g. https://alloy-ci.com )
+    https://alloy-ci.com
+    Please enter the token for this runner
     xxx
-    Please enter the gitlab-ci description for this runner
+    Please enter the description for this runner
     my-autoscale-runner
     INFO[0034] fcf5c619 Registering runner... succeeded
     Please enter the executor: shell, docker, docker-ssh, docker+machine, docker-ssh+machine, ssh?
@@ -118,10 +116,10 @@ more in [Distributed runners caching][caching].
    selecting your provider. Also configure `MachineOptions`, `limit` and
    `IdleCount`.
 
-    For more information visit the dedicated page covering detailed information
-    about [GitLab Runner Autoscaling][runner-autoscaling].
+   For more information visit the dedicated page covering detailed information
+   about [AlloyCI Runner Autoscaling][runner-autoscaling].
 
-    Example configuration using DigitalOcean:
+   Example configuration using DigitalOcean:
 
     ```toml
     concurrent = 20
@@ -163,19 +161,19 @@ more in [Distributed runners caching][caching].
 1. Stop the runner:
 
     ```bash
-    killall -SIGQUIT gitlab-runner
+    killall -SIGQUIT alloy-runner
     ```
 
     Sending the [`SIGQUIT` signal][signals] will make the Runner to stop
     gracefully. It will stop accepting new jobs, and will exit as soon as the
     current builds are finished.
 
-1. Wait until the Runner exits. You can check its status with `gitlab-runner status`
+1. Wait until the Runner exits. You can check its status with `alloy-runner status`
     or await a graceful shutdown for up to 30 minutes with:
 
     ```bash
     for i in `seq 1 180`; do # 1800 seconds = 30 minutes
-        gitlab-runner status || break
+        alloy-runner status || break
         sleep 10
     done
     ```
@@ -190,15 +188,15 @@ more in [Distributed runners caching][caching].
 1. Stop the Runner:
 
     ```bash
-    killall -SIGQUIT gitlab-runner
+    killall -SIGQUIT alloy-runner
     ```
 
-1. Wait until the Runner exits. You can check its status with: `gitlab-runner status`
+1. Wait until the Runner exits. You can check its status with: `alloy-runner status`
     or await a graceful shutdown for up to 30 minutes with:
 
     ```bash
     for i in `seq 1 180`; do # 1800 seconds = 30 minutes
-        gitlab-runner status || break
+        alloy-runner status || break
         sleep 10
     done
     ```
@@ -206,7 +204,7 @@ more in [Distributed runners caching][caching].
 1. You can now manage (upgrade or remove) any Docker Machines with the
    [`docker-machine` command][docker-machine]
 
-[runner-installation]: https://gitlab.com/gitlab-org/gitlab-runner#installation
+[runner-installation]: ../README.md#installation
 [docker-machine-installation]: https://docs.docker.com/machine/install-machine/
 [runner-autoscaling]: ../configuration/autoscale.md
 [s3]: https://aws.amazon.com/s3/

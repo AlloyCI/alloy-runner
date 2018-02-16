@@ -24,7 +24,7 @@ To use the SSH executor you need to specify `executor = "ssh"` under the
 ```
 
 You can use `password` or `identity_file` or both to authenticate against the
-server. GitLab Runner doesn't implicitly read `identity_file` from
+server. AlloyCI Runner doesn't implicitly read `identity_file` from
 `/home/user/.ssh/id_(rsa|dsa|ecdsa)`. The `identity_file` needs to be
 explicitly specified.
 
@@ -36,13 +36,13 @@ Where:
 - `<short-token>` is a shortened version of the Runner's token (first 8 letters)
 - `<concurrent-id>` is a unique number, identifying the local job ID on the
   particular Runner in context of the project
-- `<namespace>` is the namespace where the project is stored on GitLab
-- `<project-name>` is the name of the project as it is stored on GitLab
+- `<namespace>` is the namespace where the project is stored on AlloyCI
+- `<project-name>` is the name of the project as it is stored on AlloyCI
 
 To overwrite the `~/builds` directory, specify the `builds_dir` options under
 `[[runners]]` section in [`config.toml`][toml].
 
-If you want to upload job artifacts, install `gitlab-runner` on the host you are
+If you want to upload job artifacts, install `alloy-runner` on the host you are
 connecting to via SSH.
 
 ## Security

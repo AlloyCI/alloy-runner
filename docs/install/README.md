@@ -1,15 +1,11 @@
----
-comments: false
----
+# Install AlloyCI Runner
 
-# Install GitLab Runner
-
-GitLab Runner can be installed and used on GNU/Linux, macOS, FreeBSD, and Windows.
+AlloyCI Runner can be installed and used on GNU/Linux, macOS, FreeBSD, and Windows.
 There are three ways to install it. Use Docker, download a binary manually, or
 use a repository for rpm/deb packages. Below you can find
 information on the different installation methods:
 
-- [Install using GitLab's repository for Debian/Ubuntu/CentOS/RedHat](linux-repository.md) (preferred)
+- [Install using AlloyCI's repository for Debian/Ubuntu/CentOS/RedHat](linux-repository.md) (preferred)
 - [Install on GNU/Linux manually](linux-manually.md)
 - [Install on macOS](osx.md)
 - [Install on Windows](windows.md)

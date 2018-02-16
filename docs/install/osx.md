@@ -1,22 +1,14 @@
----
-last_updated: 2017-10-09
----
-
-# Install GitLab Runner on macOS
+# Install AlloyCI Runner on macOS
 
 In the future there will be a brew package, but for now you have to manually
 download the macOS binary.
 
 ## Installation
 
-CAUTION: **Important:**
-With GitLab Runner 10, the executable was renamed to `gitlab-runner`. If you
-want to install a version prior to GitLab Runner 10, [visit the old docs](old.md).
-
 1. Download the binary for your system:
 
     ```bash
-    sudo curl --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-darwin-amd64
+    sudo curl --output /usr/local/bin/alloy-runner https://alloy-runner-downloads.s3.amazonaws.com/latest/binaries/alloy-runner-darwin-amd64
     ```
 
     You can download a binary for every available version as described in
@@ -25,18 +17,18 @@ want to install a version prior to GitLab Runner 10, [visit the old docs](old.md
 1. Give it permissions to execute:
 
     ```bash
-    sudo chmod +x /usr/local/bin/gitlab-runner
+    sudo chmod +x /usr/local/bin/alloy-runner
     ```
 
 **The rest of commands execute as the user who will run the Runner.**
 
-1. [Register the Runner](../register/index.md)
+1. [Register the Runner](../register/README.md)
 1. Install the Runner as service and start it:
 
     ```bash
     cd ~
-    gitlab-runner install
-    gitlab-runner start
+    alloy-runner install
+    alloy-runner start
     ```
 
 Voila! Runner is installed and will be run after a system reboot.
@@ -46,13 +38,13 @@ Voila! Runner is installed and will be run after a system reboot.
 1. Stop the service:
 
     ```bash
-    gitlab-runner stop
+    alloy-runner stop
     ```
 
 1. Download the binary to replace the Runner's executable:
 
     ```bash
-    curl -o /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-darwin-amd64
+    curl -o /usr/local/bin/alloy-runner https://alloy-runner-downloads.s3.amazonaws.com/latest/binaries/alloy-runner-darwin-amd64
     ```
 
     You can download a binary for every available version as described in
@@ -61,17 +53,17 @@ Voila! Runner is installed and will be run after a system reboot.
 1. Give it permissions to execute:
 
     ```bash
-    chmod +x /usr/local/bin/gitlab-runner
+    chmod +x /usr/local/bin/alloy-runner
     ```
 
 1. Start the service:
 
     ```bash
-    gitlab-runner start
+    alloy-runner start
     ```
 
 Make sure that you read the [FAQ](../faq/README.md) section which describes
-some of the most common problems with GitLab Runner.
+some of the most common problems with AlloyCI Runner.
 
 ## Limitations on macOS
 
@@ -96,7 +88,7 @@ currently supported.
 
 You can verify that the Runner created the service configuration file after
 executing the `install` command, by checking the
-`~/Library/LaunchAgents/gitlab-runner.plist` file.
+`~/Library/LaunchAgents/alloy-runner.plist` file.
 
 ## Upgrade the service file
 
@@ -104,7 +96,7 @@ In order to upgrade the `LaunchAgent` configuration, you need to uninstall and
 install the service:
 
 ```bash
-gitlab-runner uninstall
-gitlab-runner install
-gitlab-runner start
+alloy-runner uninstall
+alloy-runner install
+alloy-runner start
 ```

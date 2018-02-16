@@ -1,6 +1,6 @@
 # Executors
 
-GitLab Runner implements a number of executors that can be used to run your
+AlloyCI Runner implements a number of executors that can be used to run your
 builds in different scenarios. If you are not sure what to select, read the
 [I am not sure](#i-am-not-sure) section.
 Visit the [compatibility chart](#compatibility-chart) to find
@@ -59,7 +59,7 @@ but with build hosts created on demand by _Docker Machine_.
 The **Kubernetes**  executor allows you to use an existing Kubernetes cluster
 for your builds. The executor will call the Kubernetes cluster API
 and create a new Pod (with build container and services containers) for
-each GitLab CI job.
+each AlloyCI job.
 
 ---
 
@@ -68,13 +68,13 @@ We also offer two full system virtualization options: **VirtualBox** and
 virtual machine, which will be cloned and used to run your build. It can prove
 useful if you want to run your builds on different Operating Systems since it
 allows to create virtual machines with Windows, Linux, OSX or FreeBSD and make
-GitLab Runner to connect to the virtual machine and run the build on it. Its
+AlloyCI Runner to connect to the virtual machine and run the build on it. Its
 usage can also be useful to reduce the cost of infrastructure.
 
 ---
 
 The **SSH** executor is added for completeness. It's the least supported
-executor from all of the already mentioned ones. It makes GitLab Runner to
+executor from all of the already mentioned ones. It makes AlloyCI Runner to
 connect to some external server and run the builds there. We have some success
 stories from organizations using that executor, but generally we advise to use
 any of the above.
@@ -86,14 +86,14 @@ Supported features by different executors:
 | Executor                              | Shell   | Docker | VirtualBox | Parallels | SSH  | Kubernetes |
 |---------------------------------------|---------|--------|------------|-----------|------|------------|
 | Secure Variables                      | ✓       | ✓      | ✓          | ✓         | ✓    | ✓          |
-| GitLab Runner Exec command            | ✓       | ✓      | no         | no        | no   | ✓          |
-| gitlab-ci.yml: image                  | no      | ✓      | no         | no        | no   | ✓          |
-| gitlab-ci.yml: services               | no      | ✓      | no         | no        | no   | ✓          |
-| gitlab-ci.yml: cache                  | ✓       | ✓      | ✓          | ✓         | ✓    | ✓          |
-| gitlab-ci.yml: artifacts              | ✓       | ✓      | ✓          | ✓         | ✓    | ✓          |
+| AlloyCI Runner Exec command            | ✓       | ✓      | no         | no        | no   | ✓          |
+| alloy-ci.json: image                  | no      | ✓      | no         | no        | no   | ✓          |
+| alloy-ci.json: services               | no      | ✓      | no         | no        | no   | ✓          |
+| alloy-ci.json: cache                  | ✓       | ✓      | ✓          | ✓         | ✓    | ✓          |
+| alloy-ci.json: artifacts              | ✓       | ✓      | ✓          | ✓         | ✓    | ✓          |
 | Absolute paths: caching, artifacts    | no      | no     | no         | no        | no   | ✓          |
 | Passing artifacts between stages      | ✓       | ✓      | ✓          | ✓         | ✓    | ✓          |
-| Use GitLab Container Registry private images | n/a | ✓   | n/a        | n/a       | n/a  | ✓          |
+| Use AlloyCI Container Registry private images | n/a | ✓   | n/a        | n/a       | n/a  | ✓          |
 
 Supported systems by different shells:
 
@@ -104,4 +104,4 @@ Supported systems by different shells:
 | OSX                                   | ✓ (default) | no             | no         |
 | FreeBSD                               | ✓ (default) | no             | no         |
 
-[services]: https://docs.gitlab.com/ce/ci/services/README.html
+[services]: https://github.com/AlloyCI/alloy_ci/tree/master/doc/services/README.html

@@ -1,15 +1,6 @@
----
-last_updated: 2017-11-24
----
+# Autoscaling AlloyCI Runner on AWS
 
-> **[Article Type](https://docs.gitlab.com/ee/development/writing_documentation.html#types-of-technical-articles):** Admin guide ||
-> **Level:** intermediary ||
-> **Author:** [Achilleas Pipinellis](https://gitlab.com/axil) ||
-> **Publication date:** 2017-11-24
-
-# Autoscaling GitLab Runner on AWS
-
-One of the biggest advantages of GitLab Runner is its ability to automatically
+One of the biggest advantages of AlloyCI Runner is its ability to automatically
 spin up and down VMs to make sure your builds get processed immediately. It's a
 great feature, and if used correctly, it can be extremely useful in situations
 where you don't use your Runners 24/7 and want to have a cost-effective and
@@ -17,7 +8,7 @@ scalable solution.
 
 ## Introduction
 
-In this tutorial, we'll explore how to properly configure a GitLab Runner in
+In this tutorial, we'll explore how to properly configure a AlloyCI Runner in
 AWS that will serve as the bastion where it will spawn new Docker machines on
 demand.
 
@@ -31,7 +22,7 @@ NOTE: **Note:**
 A familiarity with Amazon Web Services (AWS) is required as this is where most
 of the configuration will take place.
 
-Your GitLab instance is going to need to talk to the Runners over the network,
+Your AlloyCI instance is going to need to talk to the Runners over the network,
 and that is something you need think about when configuring any AWS security
 groups or when setting up your DNS configuration.
 
@@ -61,41 +52,41 @@ security credentials in an editor as we'll use them later during the
 
 ## Prepare the bastion instance
 
-The first step is to install GitLab Runner in an EC2 instance that will serve
+The first step is to install AlloyCI Runner in an EC2 instance that will serve
 as the bastion that spawns new machines. This doesn't have to be a powerful
 machine since it will not run any jobs itself, a `t2.micro` instance will do.
 This machine will be a dedicated host since we need it always up and running,
 thus it will be the only standard cost.
 
 NOTE: **Note:**
-For the bastion instance, choose a distribution that both Docker and GitLab
+For the bastion instance, choose a distribution that both Docker and AlloyCI
 Runner support, for example either Ubuntu, Debian, CentOS or RHEL will work fine.
 
 Install the prerequisites:
 
 1. Log in to your server
-1. [Install GitLab Runner from the official GitLab repository](../../install/linux-repository.md)
+1. [Install AlloyCI Runner from the official AlloyCI repository](../../install/linux-repository.md)
 1. [Install Docker](https://docs.docker.com/engine/installation/#server)
 1. [Install Docker Machine](https://docs.docker.com/machine/install-machine/)
 
 Now that the Runner is installed, it's time to register it.
 
-## Registering the GitLab Runner
+## Registering the AlloyCI Runner
 
-Before configuring the GitLab Runner, you need to first register it, so that
-it connects with your GitLab instance:
+Before configuring the AlloyCI Runner, you need to first register it, so that
+it connects with your AlloyCI instance:
 
-1. [Obtain a Runner token](https://docs.gitlab.com/ee/ci/runners/)
+1. [Obtain a Runner token](../../README.md)
 1. [Register the Runner](../../register/index.md#gnu-linux)
 1. When asked the executor type, enter `docker+machine`
 
-You can now move on to the most important part, configuring the GitLab Runner.
+You can now move on to the most important part, configuring the AlloyCI Runner.
 
 TIP: **Tip:**
 If you want every user in your instance to be able to use the autoscaled Runners,
 register the Runner as a shared one.
 
-## Configuring the GitLab Runner
+## Configuring the AlloyCI Runner
 
 Now that the Runner is registered, you need to edit its configuration file and
 add the required options for the AWS machine driver.
@@ -110,7 +101,7 @@ needs, like how many users your Runners will accommodate, how much time your
 builds take, etc. You can start with something low like `10`, and increase or
 decrease its value going forward.
 
-The `check_interval` option defines how often the Runner should check GitLab
+The `check_interval` option defines how often the Runner should check AlloyCI
 for new jobs, in seconds.
 
 Example:
@@ -137,8 +128,8 @@ Example:
 
 ```toml
 [[runners]]
-  name = "gitlab-aws-autoscaler"
-  url = "<URL of your GitLab instance>"
+  name = "alloy-aws-autoscaler"
+  url = "<URL of your AlloyCI instance>"
   token = "<Runner's token>"
   executor = "docker+machine"
   limit = 20
@@ -150,10 +141,10 @@ about all the options you can use under `[[runners]]`.
 ### The `runners.docker` section
 
 In the `[runners.docker]` section you can define the default Docker image to
-be used by the child Runners if it's not defined in [`.gitlab-ci.yml`](https://docs.gitlab.com/ee/ci/yaml/).
+be used by the child Runners if it's not defined in [`.alloy-ci.json`](https://github.com/AlloyCI/alloy_ci/tree/master/doc/json/README.md).
 By using `privileged = true`, all Runners will be able to run
-[Docker in Docker](https://docs.gitlab.com/ce/ci/docker/using_docker_build.html#use-docker-in-docker-executor)
-which is useful if you plan to build your own Docker images via GitLab CI/CD.
+[Docker in Docker](https://github.com/AlloyCI/alloy_ci/tree/master/doc/docker/README.md#use-docker-in-docker-executor)
+which is useful if you plan to build your own Docker images via AlloyCI.
 
 Next, we use `disable_cache = true` to disable the Docker executor's inner
 cache mechanism since we will use the distributed cache mode as described
@@ -173,10 +164,10 @@ about all the options you can use under `[runners.docker]`.
 
 ### The `runners.cache` section
 
-To speed up your jobs, GitLab Runner provides a cache mechanism where selected
+To speed up your jobs, AlloyCI Runner provides a cache mechanism where selected
 directories and/or files are saved and shared between subsequent jobs.
 While not required for this setup, it is recommended to use the distributed cache
-mechanism that GitLab Runner provides. Since new instances will be created on
+mechanism that AlloyCI Runner provides. Since new instances will be created on
 demand, it is essential to have a common place where the cache is stored.
 
 In the following example, we use Amazon S3:
@@ -195,13 +186,13 @@ In the following example, we use Amazon S3:
 Here's some more info to further explore the cache mechanism:
 
 - [Reference for `runners.cache`](../advanced-configuration.md#the-runners-cache-section)
-- [Deploying and using a cache server for GitLab Runner](../autoscale.md#distributed-runners-caching)
-- [How cache works](https://docs.gitlab.com/ee/ci/yaml/#cache)
+- [Deploying and using a cache server for AlloyCI Runner](../autoscale.md#distributed-runners-caching)
+- [How cache works](https://github.com/AlloyCI/alloy_ci/tree/master/doc/json/README.md#cache)
 
 ### The `runners.machine` section
 
 This is the most important part of the configuration and it's the one that
-tells GitLab Runner how and when to spawn new or remove old Docker Machine
+tells AlloyCI Runner how and when to spawn new or remove old Docker Machine
 instances.
 
 We will focus on the AWS machine options, for the rest of the settings read
@@ -224,7 +215,7 @@ Here's an example of the `runners.machine` section:
     OffPeakIdleCount = 0
     OffPeakIdleTime = 1200
     MachineDriver = "amazonec2"
-    MachineName = "gitlab-docker-machine-%s"
+    MachineName = "alloy-docker-machine-%s"
     MachineOptions = [
       "amazonec2-access-key=XXXX",
       "amazonec2-secret-key=XXXX",
@@ -232,7 +223,7 @@ Here's an example of the `runners.machine` section:
       "amazonec2-vpc-id=vpc-xxxxx",
       "amazonec2-subnet-id=subnet-xxxxx",
       "amazonec2-use-private-address=true",
-      "amazonec2-tags=runner-manager-name,gitlab-aws-autoscaler,gitlab,true,gitlab-runner-autoscale,true",
+      "amazonec2-tags=runner-manager-name,alloy-aws-autoscaler,alloy,true,alloy-runner-autoscale,true",
       "amazonec2-security-group=docker-machine-scaler",
       "amazonec2-instance-type=m4.2xlarge",
     ]
@@ -240,7 +231,7 @@ Here's an example of the `runners.machine` section:
 
 The Docker Machine driver is set to `amazonec2` and the machine name has a
 standard prefix followed by `%s` (required) that is replaced by the ID of the
-child Runner: `gitlab-docker-machine-%s`.
+child Runner: `alloy-docker-machine-%s`.
 
 Now, depending on your AWS infrastructure, there are many options you can set up
 under `MachineOptions`. Below you can see the most common ones.
@@ -253,7 +244,7 @@ under `MachineOptions`. Below you can see the most common ones.
 | `amazonec2-vpc-id=vpc-xxxxx` | Your [VPC ID](https://docs.docker.com/machine/drivers/aws/#vpc-id) to launch the instance in. |
 | `amazonec2-subnet-id=subnet-xxxx` | The AWS VPC subnet ID. |
 | `amazonec2-use-private-address=true` | Use the private IP address of Docker Machines, but still create a public IP address. Useful to keep the traffic internal and avoid extra costs.|
-| `amazonec2-tags=runner-manager-name,gitlab-aws-autoscaler,gitlab,true,gitlab-runner-autoscale,true` | AWS extra tag key-value pairs, useful to identify the instances on the AWS console. The "Name" tag is set to the machine name by default. We set the "runner-manager-name" to match the Runner name set in `[[runners]]`, so that we can filter all the EC2 instances created by a specific manager setup. Read more about [using tags in AWS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html). |
+| `amazonec2-tags=runner-manager-name,alloy-aws-autoscaler,alloy,true,alloy-runner-autoscale,true` | AWS extra tag key-value pairs, useful to identify the instances on the AWS console. The "Name" tag is set to the machine name by default. We set the "runner-manager-name" to match the Runner name set in `[[runners]]`, so that we can filter all the EC2 instances created by a specific manager setup. Read more about [using tags in AWS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html). |
 | `amazonec2-security-group=docker-machine-scaler` | AWS VPC security group name, see [AWS security groups](#aws-security-groups). |
 | `amazonec2-instance-type=m4.2xlarge` | The instance type that the child Runners will run on. |
 
@@ -279,15 +270,15 @@ about all the options you can use under `[runners.machine]`.
 
 ### Getting it all together
 
-Here's the full example of `/etc/gitlab-runner/config.toml`:
+Here's the full example of `/etc/alloy-runner/config.toml`:
 
 ```toml
 concurrent = 10
 check_interval = 0
 
 [[runners]]
-  name = "gitlab-aws-autoscaler"
-  url = "<URL of your GitLab instance>"
+  name = "alloy-aws-autoscaler"
+  url = "<URL of your AlloyCI instance>"
   token = "<Runner's token>"
   executor = "docker+machine"
   limit = 20
@@ -314,7 +305,7 @@ check_interval = 0
     OffPeakIdleCount = 0
     OffPeakIdleTime = 1200
     MachineDriver = "amazonec2"
-    MachineName = "gitlab-docker-machine-%s"
+    MachineName = "alloy-docker-machine-%s"
     MachineOptions = [
       "amazonec2-access-key=XXXX",
       "amazonec2-secret-key=XXXX",
@@ -322,7 +313,7 @@ check_interval = 0
       "amazonec2-vpc-id=vpc-xxxxx",
       "amazonec2-subnet-id=subnet-xxxxx",
       "amazonec2-use-private-address=true",
-      "amazonec2-tags=runner-manager-name,gitlab-aws-autoscaler,gitlab,true,gitlab-runner-autoscale,true",
+      "amazonec2-tags=runner-manager-name,alloy-aws-autoscaler,alloy,true,alloy-runner-autoscale,true",
       "amazonec2-security-group=docker-machine-scaler",
       "amazonec2-instance-type=m4.2xlarge",
     ]
@@ -340,7 +331,7 @@ grow your application’s compute capacity and throughput for the same budget,
 and enable new types of cloud computing applications.
 
 In addition to the [`runners.machine`](#the-runners-machine-section) options
-you picked above, in `/etc/gitlab-runner/config.toml` under the `MachineOptions`
+you picked above, in `/etc/alloy-runner/config.toml` under the `MachineOptions`
 section, add the following:
 
 ```toml
@@ -384,19 +375,19 @@ docker-machine ls -q --filter state=Error --format "{{.NAME}}"
 ```
 
 NOTE: **Note:**
-There are some issues regarding making GitLab Runner gracefully handle Spot
+There are some issues regarding making AlloyCI Runner gracefully handle Spot
 price changes, and there are reports of `docker-machine` attempting to
-continually remove a Docker Machine. GitLab has provided patches for both cases
+continually remove a Docker Machine. AlloyCI has provided patches for both cases
 in the upstream project. For more information, see issues
 [#2771](https://gitlab.com/gitlab-org/gitlab-runner/issues/2771) and
 [#2772](https://gitlab.com/gitlab-org/gitlab-runner/issues/2772).
 
 ## Conclusion
 
-In this guide we learned how to install and configure a GitLab Runner in
+In this guide we learned how to install and configure a AlloyCI Runner in
 autoscale mode on AWS.
 
-Using the autoscale feature of GitLab Runner can save you both time and money.
+Using the autoscale feature of AlloyCI Runner can save you both time and money.
 Using the Spot instances that AWS provides can save you even more, but you must
 be aware of the implications. As long as your bid is high enough, there shouldn't
 be an issue.

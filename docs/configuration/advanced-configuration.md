@@ -1,18 +1,18 @@
 # Advanced configuration
 
-GitLab Runner configuration uses the [TOML][] format.
+AlloyCI Runner configuration uses the [TOML][] format.
 
 The file to be edited can be found in:
 
-1. `/etc/gitlab-runner/config.toml` on \*nix systems when gitlab-runner is
+1. `/etc/alloy-runner/config.toml` on \*nix systems when alloy-runner is
    executed as root (**this is also path for service configuration**)
-1. `~/.gitlab-runner/config.toml` on \*nix systems when gitlab-runner is
+1. `~/.alloy-runner/config.toml` on \*nix systems when alloy-runner is
    executed as non-root
 1. `./config.toml` on other systems
 
 ## The global section
 
-This defines global settings of GitLab Runner.
+This defines global settings of AlloyCI Runner.
 
 | Setting | Description |
 | ------- | ----------- |
@@ -47,12 +47,12 @@ This defines one runner entry.
 | `builds_dir`         | directory where builds will be stored in context of selected executor (Locally, Docker, SSH) |
 | `cache_dir`          | directory where build caches will be stored in context of selected executor (Locally, Docker, SSH). If the `docker` executor is used, this directory needs to be included in its `volumes` parameter. |
 | `environment`        | append or overwrite environment variables |
-| `request_concurrency` | limit number of concurrent requests for new jobs from GitLab (default 1) |
+| `request_concurrency` | limit number of concurrent requests for new jobs from AlloyCI (default 1) |
 | `output_limit`       | set maximum build log size in kilobytes, by default set to 4096 (4MB) |
 | `pre_clone_script`   | commands to be executed on the runner before cloning the Git repository. this can be used to adjust the Git client configuration first, for example. To insert multiple commands, use a (triple-quoted) multi-line string or "\n" character. |
 | `pre_build_script`   | commands to be executed on the runner after cloning the Git repository, but before executing the build. To insert multiple commands, use a (triple-quoted) multi-line string or "\n" character. |
 | `post_build_script`  | commands to be executed on the runner just after executing the build, but before executing `after_script`. To insert multiple commands, use a (triple-quoted) multi-line string or "\n" character. |
-| `clone_url`	       | Overwrite the URL for the GitLab instance. Used if the runner can't connect to GitLab on the URL GitLab exposes itself. |
+| `clone_url`	       | Overwrite the URL for the AlloyCI instance. Used if the runner can't connect to AlloyCI on the URL AlloyCI exposes itself. |
 
 Example:
 
@@ -66,19 +66,19 @@ Example:
   builds_dir = ""
   shell = ""
   environment = ["ENV=value", "LC_ALL=en_US.UTF-8"]
-  clone_url = "http://gitlab.example.local"
+  clone_url = "http://alloy.example.local"
 ```
 
 ### How `clone_url` works
 
-In cases where the GitLab instance is exposed to an URL which can't be used
-by the runner, a `clone_url` can be configured. For example; GitLab is exposed
-to `https://gitlab.example.com`, but the runner can't reach that because of
+In cases where the AlloyCI instance is exposed to an URL which can't be used
+by the runner, a `clone_url` can be configured. For example; AlloyCI is exposed
+to `https://alloy.example.com`, but the runner can't reach that because of
 a firewall setup. If the runner can reach the node on `192.168.1.23`,
 the `clone_url` should be set to `"http://192.168.1.23`.
 
 Only if the `clone_url` is set, the runner will construct a clone URL in the form
-of `http://gitlab-ci-token:s3cr3tt0k3n@192.168.1.23/namespace/project.git`.
+of `http://alloy-ci-token:s3cr3tt0k3n@192.168.1.23/namespace/project.git`.
 
 ## The EXECUTORS
 
@@ -139,8 +139,8 @@ This defines the Docker Container parameters.
 | `volume_driver`             | specify the volume driver to use for the container |
 | `links`                     | specify containers which should be linked with building container |
 | `services`                  | specify additional services that should be run with build. Please visit [Docker Registry](https://registry.hub.docker.com/) for list of available applications. Each service will be run in separate container and linked to the build. |
-| `allowed_images`            | specify wildcard list of images that can be specified in .gitlab-ci.yml. If not present all images are allowed (equivalent to `["*/*:*"]`) |
-| `allowed_services`          | specify wildcard list of services that can be specified in .gitlab-ci.yml. If not present all images are allowed (equivalent to `["*/*:*"]`) |
+| `allowed_images`            | specify wildcard list of images that can be specified in .alloy-ci.json. If not present all images are allowed (equivalent to `["*/*:*"]`) |
+| `allowed_services`          | specify wildcard list of services that can be specified in .alloy-ci.json. If not present all images are allowed (equivalent to `["*/*:*"]`) |
 | `pull_policy`               | specify the image pull policy: `never`, `if-not-present` or `always` (default); read more in the [pull policies documentation](../executors/docker.md#how-pull-policies-work) |
 | `sysctls`                   | specify the sysctl options |
 | `helper_image`              | [ADVANCED] Override the default helper image used to clone repos and upload artifacts |
@@ -226,18 +226,14 @@ This will use `/path/to/bind/from/host` of the CI host inside the container at
 ### Using a private container registry
 
 > **Notes:**
-- This feature requires GitLab Runner **1.8** or higher
-- For GitLab Runner versions **>= 0.6, <1.8** there was a partial
-  support for using private registries, which required manual configuration
-  of credentials on runner's host. We recommend to upgrade your Runner to
-  at least version **1.8** if you want to use private registries.
+- This feature requires AlloyCI Runner **1.0** or higher
 - Using private registries with the `if-not-present` pull policy may introduce
   [security implications][secpull]. To fully understand how pull policies work,
   read the [pull policies documentation](../executors/docker.md#how-pull-policies-work).
 
 If you want to use private registries as a source of images for your builds,
 you can set the authorization configuration in the `DOCKER_AUTH_CONFIG`
-[secret variable]. It can be set in both GitLab Variables section of
+[secret variable]. It can be set in both AlloyCI Variables section of
 a project and in the `config.toml` file.
 
 For a detailed example, visit the [Using Docker images documentation][priv-example].
@@ -251,31 +247,24 @@ The steps performed by the Runner can be summed up to:
    found, subsequent pulls will make use of it.
 
 Now that the Runner is set up to authenticate against your private registry,
-learn [how to configure .gitlab-ci.yml][yaml-priv-reg] in order to use that
+learn [how to configure .alloy-ci.json][json-priv-reg] in order to use that
 registry.
 
-#### Support for GitLab integrated registry
+#### Support for AlloyCI integrated registry
 
-> **Note:**
-To work automatically with private/protected images from
-GitLab integrated registry it needs at least GitLab CE/EE **8.14**
-and GitLab Runner **1.8**.
-
-Starting with GitLab CE/EE 8.14, GitLab will send credentials for its integrated
+Starting with AlloyCI v1.0, AlloyCI will send credentials for its integrated
 registry along with the build data. These credentials will be automatically
 added to registries authorization parameters list.
 
 After this authorization against the registry will be proceed like for
 configuration added with `DOCKER_AUTH_CONFIG` variable.
 
-Thanks to this, in your builds you can use any image from you GitLab integrated
-registry, even if the image is private/protected. To fully understand for
-which images the builds will have access, read the
-[New CI build permissions model][ci-build-permissions-model] documentation.
+Thanks to this, in your builds you can use any image from you AlloyCI integrated
+registry, even if the image is private/protected.
 
 #### Precedence of Docker authorization resolving
 
-As described above, GitLab Runner can authorize Docker against a registry by
+As described above, AlloyCI Runner can authorize Docker against a registry by
 using credentials sent in different way. To find a proper registry, the following
 precedence is taken into account:
 
@@ -366,9 +355,6 @@ Example:
 
 ## The [runners.machine] section
 
->**Note:**
-Added in GitLab Runner v1.1.0.
-
 This defines the Docker Machine based autoscaling feature. More details can be
 found in the separate [runners autoscale documentation](autoscale.md).
 
@@ -428,9 +414,6 @@ can be found [here][cronvendor].
 
 ## The [runners.cache] section
 
->**Note:**
-Added in GitLab Runner v1.1.0.
-
 This defines the distributed cache feature. More details can be found
 in the [runners autoscale documentation](autoscale.md#distributed-runners-caching).
 
@@ -469,9 +452,6 @@ Example:
 
 ## The [runners.kubernetes] section
 
-> **Note:**
-> Added in GitLab Runner v1.6.0
-
 This defines the Kubernetes parameters.
 See [Kubernetes executor](../executors/kubernetes.md) for additional parameters.
 
@@ -495,25 +475,24 @@ Example:
 	cert_file = "/etc/ssl/kubernetes/api.crt"
 	key_file = "/etc/ssl/kubernetes/api.key"
 	ca_file = "/etc/ssl/kubernetes/ca.crt"
-	namespace = "gitlab"
+	namespace = "alloy-ci"
 	image = "golang:1.8"
 	privileged = true
 	image_pull_secrets = ["docker-registry-credentials"]
 	[runners.kubernetes.node_selector]
-		gitlab = "true"
+		alloy-ci = "true"
 ```
 
 ## Note
 
-If you'd like to deploy to multiple servers using GitLab CI, you can create a
+If you'd like to deploy to multiple servers using AlloyCI, you can create a
 single script that deploys to multiple servers or you can create many scripts.
 It depends on what you'd like to do.
 
 [TOML]: https://github.com/toml-lang/toml
 [Docker Engine]: https://www.docker.com/docker-engine
-[yaml-priv-reg]: https://docs.gitlab.com/ce/ci/yaml/README.html#image-and-services
-[ci-build-permissions-model]: https://docs.gitlab.com/ce/user/project/new_ci_build_permissions_model.html
-[secpull]: ../security/index.md#usage-of-private-docker-images-with-if-not-present-pull-policy
-[priv-example]: https://docs.gitlab.com/ce/ci/docker/using_docker_images.html#define-an-image-from-a-private-docker-registry
+[json-priv-reg]: ../../json/README.md#image-and-services
+[secpull]: ../security/README.md#usage-of-private-docker-images-with-if-not-present-pull-policy
+[priv-example]: ../../docker/README.md#define-an-image-from-a-private-docker-registry
 [secret variable]: https://docs.gitlab.com/ce/ci/variables/#secret-variables
-[cronvendor]: https://gitlab.com/gitlab-org/gitlab-runner/blob/master/vendor/github.com/gorhill/cronexpr/README.md
+[cronvendor]: https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/vendor/github.com/gorhill/cronexpr/README.md

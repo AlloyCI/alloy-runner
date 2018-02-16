@@ -1,13 +1,10 @@
-# GitLab Runner monitoring
+# AlloyCI Runner monitoring
 
-GitLab Runner can be monitored using [Prometheus].
+AlloyCI Runner can be monitored using [Prometheus].
 
 ## Embedded Prometheus metrics
 
-> The embedded HTTP Statistics Server with Prometheus metrics was
-introduced in GitLab Runner 1.8.0.
-
-The GitLab Runner is instrumented with native Prometheus
+The AlloyCI Runner is instrumented with native Prometheus
 metrics, which can be exposed via an embedded HTTP server on the `/metrics`
 path. The server - if enabled - can be scraped by the Prometheus monitoring
 system or accessed with any other HTTP client.
@@ -40,7 +37,7 @@ ci_docker_machines_provider{state="used"} 0
 ci_runner_builds{stage="prepare_script",state="running"} 1
 # HELP ci_runner_version_info A metric with a constant '1' value labeled by different build stats fields.
 # TYPE ci_runner_version_info gauge
-ci_runner_version_info{architecture="amd64",branch="rename-to-gitlab-runner",built_at="2017-09-11 15:30:31 +0000 +0000",go_version="go1.8.3",name="gitlab-runner",os="linux",revision="35e724fa",version="10.0.0~beta.28.g35e724fa"} 1
+ci_runner_version_info{architecture="amd64",branch="rename-to-alloy-runner",built_at="2017-09-11 15:30:31 +0000 +0000",go_version="go1.8.3",name="alloy-runner",os="linux",revision="35e724fa",version="10.0.0~beta.28.g35e724fa"} 1
 # HELP ci_ssh_docker_machines The total number of machines created.
 # TYPE ci_ssh_docker_machines counter
 ci_ssh_docker_machines{type="created"} 0
@@ -160,7 +157,7 @@ metric. This metrics format is documented in Prometheus'
 specification.
 
 These metrics are meant as a way for operators to monitor and gain insight into
-GitLab Runners. For example, you may be interested if the load average increase
+AlloyCI Runners. For example, you may be interested if the load average increase
 on your runner's host is related to an increase of processed builds or not. Or
 you are running a cluster of machines to be used for the builds and you want to
 track build trends to plan changes in your infrastructure.
@@ -178,8 +175,6 @@ dispatch alert notifications.
 
 ## `pprof` HTTP endpoints
 
-> `pprof` integration was introduced in GitLab Runner 1.9.0.
-
 While having metrics about internal state of Runner process is useful
 we've found that in some cases it would be good to check what is happening
 inside of the Running process in real time. That's why we've introduced
@@ -194,7 +189,7 @@ You can read more about using `pprof` in its [documentation][go-pprof].
 
 > **Note:**
 The metrics server exports data about the internal state of the
-GitLab Runner process and should not be publicly available!
+AlloyCI Runner process and should not be publicly available!
 
 The metrics HTTP server can be configured in two ways:
 

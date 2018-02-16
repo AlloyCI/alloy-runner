@@ -1,7 +1,5 @@
 # Runners autoscale configuration
 
-> The autoscale feature was introduced in GitLab Runner 1.1.0.
-
 Autoscale provides the ability to utilize resources in a more elastic and
 dynamic way.
 
@@ -18,22 +16,12 @@ wait to run the next builds or can be removed after the configured `IdleTime`.
 In case of many cloud providers this helps to utilize the cost of already used
 instances.
 
-Below, you can see a real life example of the runners autoscale feature, tested
-on GitLab.com for the [GitLab Community Edition][ce] project:
-
-![Real life example of autoscaling](img/autoscale-example.png)
-
-Each machine on the chart is an independent cloud instance, running build jobs
-inside of Docker containers.
-
-[ce]: https://gitlab.com/gitlab-org/gitlab-ce
-
 ## System requirements
 
 To use the autoscale feature, the system which will host the Runner must have:
 
-- GitLab Runner executable - installation guide can be found in
-  [GitLab Runner Documentation][runner-installation]
+- AlloyCI Runner executable - installation guide can be found in
+  [AlloyCI Runner Documentation][runner-installation]
 - Docker Machine executable - installation guide can be found in
   [Docker Machine documentation][docker-machine-installation]
 
@@ -47,8 +35,8 @@ out of the scope of this documentation. For more details please read the
 
 In this section we will describe only the significant parameters from the
 autoscale feature point of view. For more configurations details please read
-the [GitLab Runner - Installation][runner-installation]
-and [GitLab Runner - Advanced Configuration][runner-configuration].
+the [AlloyCI Runner - Installation][runner-installation]
+and [AlloyCI Runner - Advanced Configuration][runner-configuration].
 
 ### Runner global options
 
@@ -66,12 +54,12 @@ and [GitLab Runner - Advanced Configuration][runner-configuration].
 ### `[runners.machine]` options
 
 Configuration parameters details can be found
-in [GitLab Runner - Advanced Configuration - The runners.machine section](advanced-configuration.md#the-runnersmachine-section).
+in [AlloyCI Runner - Advanced Configuration - The runners.machine section](advanced-configuration.md#the-runnersmachine-section).
 
 ### `[runners.cache]` options
 
 Configuration parameters details can be found
-in [GitLab Runner - Advanced Configuration - The runners.cache section](advanced-configuration.md#the-runnerscache-section)
+in [AlloyCI Runner - Advanced Configuration - The runners.cache section](advanced-configuration.md#the-runnerscache-section)
 
 ### Additional configuration information
 
@@ -90,17 +78,17 @@ The autoscaling algorithm is based on three main parameters: `IdleCount`,
 `IdleTime` and `limit`.
 
 We say that each machine that does not run a build is in _Idle_ state. When
-GitLab Runner is in autoscale mode, it monitors all machines and ensures that
+AlloyCI Runner is in autoscale mode, it monitors all machines and ensures that
 there is always an `IdleCount` of machines in _Idle_ state.
 
-At the same time, GitLab Runner is checking the duration of the _Idle_ state of
+At the same time, AlloyCI Runner is checking the duration of the _Idle_ state of
 each machine. If the time exceeds the `IdleTime` value, the machine is
 automatically removed.
 
 ---
 
 **Example:**
-Let's suppose, that we have configured GitLab Runner with the following
+Let's suppose, that we have configured AlloyCI Runner with the following
 autoscale parameters:
 
 ```bash
@@ -114,21 +102,21 @@ autoscale parameters:
     (...)
 ```
 
-At the beginning, when no builds are queued, GitLab Runner starts two machines
+At the beginning, when no builds are queued, AlloyCI Runner starts two machines
 (`IdleCount = 2`), and sets them in _Idle_ state. Notice that we have also set 
 `IdleTime` to 30 minutes (`IdleTime = 1800`).
 
-Now, let's assume that 5 builds are queued in GitLab CI. The first 2 builds are
-sent to the _Idle_ machines of which we have two. GitLab Runner now notices that 
+Now, let's assume that 5 builds are queued in AlloyCI CI. The first 2 builds are
+sent to the _Idle_ machines of which we have two. AlloyCI Runner now notices that 
 the number of _Idle_ is less than `IdleCount` (`0 < 2`), so it starts 2 new 
 machines. Then, the next 2 builds from the queue are sent to those newly created 
 machines. Again, the number of _Idle_ machines is less than `IdleCount`, so 
-GitLab Runner starts 2 new machines and the last queued build is sent to one of 
+AlloyCI Runner starts 2 new machines and the last queued build is sent to one of 
 the _Idle_ machines.
 
-We now have 1 _Idle_ machine, so GitLab Runner starts another 1 new machine to
+We now have 1 _Idle_ machine, so AlloyCI Runner starts another 1 new machine to
 satisfy `IdleCount`. Because there are no new builds in queue, those two
-machines stay in _Idle_ state and GitLab Runner is satisfied.
+machines stay in _Idle_ state and AlloyCI Runner is satisfied.
 
 ---
 
@@ -138,10 +126,10 @@ where queued, new machines were created, so in total we had 7 machines. Five of
 them were running builds, and 2 were in _Idle_ state, waiting for the next
 builds.
 
-The algorithm will still work in the same way; GitLab Runner will create a new
+The algorithm will still work in the same way; AlloyCI Runner will create a new
 _Idle_ machine for each machine used for the build execution until `IdleCount`
 is satisfied. Those machines will be created up to the number defined by
-`limit` parameter. If GitLab Runner notices that there is a `limit` number of
+`limit` parameter. If AlloyCI Runner notices that there is a `limit` number of
 total created machines, it will stop autoscaling, and new builds will need to
 wait in the build queue until machines start returning to _Idle_ state.
 
@@ -156,7 +144,7 @@ After the build is finished, the machine is set to _Idle_ state and is waiting
 for the next builds to be executed. Let's suppose that we have no new builds in
 the queue. After the time designated by `IdleTime` passes, the _Idle_ machines
 will be removed. In our example, after 30 minutes, all machines will be removed
-(each machine after 30 minutes from when last build execution ended) and GitLab
+(each machine after 30 minutes from when last build execution ended) and AlloyCI
 Runner will start to keep an `IdleCount` of _Idle_ machines running, just like
 at the beginning of the example.
 
@@ -226,7 +214,7 @@ not be able to have 10 idle machines, but only 5, because the `limit` is 25.
 
 ## Off Peak time mode configuration
 
-> Introduced in GitLab Runner v1.7
+> Introduced in AlloyCI Runner v1.7
 
 Autoscale can be configured with the support for _Off Peak_ time mode periods.
 
@@ -279,11 +267,11 @@ the `OffPeakPeriods` pattern is fulfilled then it switches back to
 `IdleCount` and `IdleTime` settings.
 
 More information about syntax of `OffPeakPeriods` patterns can be found
-in [GitLab Runner - Advanced Configuration - The runners.machine section](advanced-configuration.md#the-runnersmachine-section).
+in [AlloyCI Runner - Advanced Configuration - The runners.machine section](advanced-configuration.md#the-runnersmachine-section).
 
 ## Distributed runners caching
 
-To speed up your builds, GitLab Runner provides a [cache mechanism][cache]
+To speed up your builds, AlloyCI Runner provides a [cache mechanism][cache]
 where selected directories and/or files are saved and shared between subsequent
 builds.
 
@@ -297,7 +285,7 @@ To overcome this issue, together with the autoscale feature, the distributed
 Runners cache feature was introduced.
 
 It uses any S3-compatible server to share the cache between used Docker hosts.
-When restoring and archiving the cache, GitLab Runner will query the S3 server
+When restoring and archiving the cache, AlloyCI Runner will query the S3 server
 and will download or upload the archive.
 
 To enable distributed caching, you have to define it in `config.toml` using the
@@ -364,8 +352,8 @@ The `config.toml` below uses the `digitalocean` Docker Machine driver:
 concurrent = 50   # All registered Runners can run up to 50 concurrent builds
 
 [[runners]]
-  url = "https://gitlab.com"
-  token = "RUNNER_TOKEN"             # Note this is different from the registration token used by `gitlab-runner register`
+  url = "https://alloy-ci.com"
+  token = "RUNNER_TOKEN"             # Note this is different from the registration token used by `alloy-runner register`
   name = "autoscale-runner"
   executor = "docker+machine"        # This Runner is using the 'docker+machine' executor
   limit = 10                         # This Runner can execute up to 10 builds (created machines)
@@ -411,9 +399,9 @@ The autoscale mechanism currently is based on Docker Machine. Advanced
 configuration options, including virtualization/cloud provider parameters, are
 available at the [Docker Machine documentation][docker-machine-driver].
 
-[cache]: http://doc.gitlab.com/ce/ci/yaml/README.html#cache
+[cache]: https://github.com/AlloyCI/alloy_ci/tree/master/doc/json/README.md#cache
 [runner-installation]: ../install/autoscaling.md
-[runner-configuration]: index.md
+[runner-configuration]: README.md
 [docker-machine-docs]: https://docs.docker.com/machine/
 [docker-machine-driver]: https://docs.docker.com/machine/drivers/
 [docker-machine-installation]: https://docs.docker.com/machine/install-machine/

@@ -1,15 +1,15 @@
 # Registering Runners
 
-Registering a Runner is the process that binds the Runner with a GitLab instance.
+Registering a Runner is the process that binds the Runner with a AlloyCI instance.
 
 ## Prerequisites
 
 Before registering a Runner, you need to first:
 
-- [Install it](../install/index.md) on a server separate than where GitLab
+- [Install it](../install/README.md) on a server separate than where AlloyCI
   is installed on
-- [Obtain a token](https://docs.gitlab.com/ce/ci/runners/) for a shared or
-  specific Runner via GitLab's interface
+- [Obtain a token](https://docs.alloy.com/ce/ci/runners/) for a shared or
+  specific Runner via AlloyCI's interface
 
 ## GNU/Linux
 
@@ -18,40 +18,39 @@ To register a Runner under GNU/Linux:
 1. Run the following command:
 
     ```sh
-    sudo gitlab-runner register
+    sudo alloy-runner register
     ```
 
-1. Enter your GitLab instance URL:
+1. Enter your AlloyCI instance URL:
 
     ```
-    Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com )
-    https://gitlab.com
+    Please enter the coordinator URL (e.g. https://alloy-ci.com )
+    https://alloy-ci.com
     ```
 
 1. Enter the token you obtained to register the Runner:
 
     ```
-    Please enter the gitlab-ci token for this runner
+    Please enter the token for this runner
     xxx
     ```
 
-1. Enter a description for the Runner, you can change this later in GitLab's
-   UI:
+1. Enter a description for the Runner:
 
     ```
-    Please enter the gitlab-ci description for this runner
+    Please enter the description for this runner
     [hostame] my-runner
     ```
 
-1. Enter the [tags associated with the Runner][tags], you can change this later in GitLab's UI:
+1. Enter the [tags associated with the Runner][tags], you can change this later in AlloyCI's UI:
 
     ```
-    Please enter the gitlab-ci tags for this runner (comma separated):
+    Please enter the tags for this runner (comma separated):
     my-tag,another-tag
     ```
 
 1. Choose whether the Runner should pick up jobs that do not [have tags][tags],
-   you can change this later in GitLab's UI (defaults to false):
+   you can change this later in AlloyCI's UI (defaults to false):
 
     ```
     Whether to run untagged jobs [true/false]:
@@ -59,7 +58,7 @@ To register a Runner under GNU/Linux:
     ```
 
 1. Choose whether to lock the Runner to the current project, you can change
-   this later in GitLab's UI. Useful when the Runner is specific (defaults to
+   this later in AlloyCI's UI. Useful when the Runner is specific (defaults to
    true):
 
     ```
@@ -75,7 +74,7 @@ To register a Runner under GNU/Linux:
     ```
 
 1. If you chose Docker as your executor, you'll be asked for the default
-   image to be used for projects that do not define one in `.gitlab-ci.yml`:
+   image to be used for projects that do not define one in `.alloy-ci.json`:
 
     ```
     Please enter the Docker image (eg. ruby:2.1):
@@ -89,40 +88,39 @@ To register a Runner under macOS:
 1. Run the following command:
 
     ```sh
-    gitlab-runner register
+    sudo alloy-runner register
     ```
 
-1. Enter your GitLab instance URL:
+1. Enter your AlloyCI instance URL:
 
     ```
-    Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com )
-    https://gitlab.com
+    Please enter the coordinator URL (e.g. https://alloy-ci.com )
+    https://alloy-ci.com
     ```
 
 1. Enter the token you obtained to register the Runner:
 
     ```
-    Please enter the gitlab-ci token for this runner
+    Please enter the token for this runner
     xxx
     ```
 
-1. Enter a description for the Runner, you can change this later in GitLab's
-   UI:
+1. Enter a description for the Runner:
 
     ```
-    Please enter the gitlab-ci description for this runner
+    Please enter the description for this runner
     [hostame] my-runner
     ```
 
-1. Enter the [tags associated with the Runner][tags], you can change this later in GitLab's UI:
+1. Enter the [tags associated with the Runner][tags], you can change this later in AlloyCI's UI:
 
     ```
-    Please enter the gitlab-ci tags for this runner (comma separated):
+    Please enter the tags for this runner (comma separated):
     my-tag,another-tag
     ```
 
 1. Choose whether the Runner should pick up jobs that do not [have tags][tags],
-   you can change this later in GitLab's UI (defaults to false):
+   you can change this later in AlloyCI's UI (defaults to false):
 
     ```
     Whether to run untagged jobs [true/false]:
@@ -130,7 +128,7 @@ To register a Runner under macOS:
     ```
 
 1. Choose whether to lock the Runner to the current project, you can change
-   this later in GitLab's UI. Useful when the Runner is specific (defaults to
+   this later in AlloyCI's UI. Useful when the Runner is specific (defaults to
    true):
 
     ```
@@ -146,7 +144,7 @@ To register a Runner under macOS:
     ```
 
 1. If you chose Docker as your executor, you'll be asked for the default
-   image to be used for projects that do not define one in `.gitlab-ci.yml`:
+   image to be used for projects that do not define one in `.alloy-ci.json`:
 
     ```
     Please enter the Docker image (eg. ruby:2.1):
@@ -161,40 +159,39 @@ To register a Runner under Windows:
 1. Run the following command:
 
     ```sh
-    ./gitlab-runner.exe register
+    sudo alloy-runner register
     ```
 
-1. Enter your GitLab instance URL:
+1. Enter your AlloyCI instance URL:
 
     ```
-    Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com )
-    https://gitlab.com
+    Please enter the coordinator URL (e.g. https://alloy-ci.com )
+    https://alloy-ci.com
     ```
 
 1. Enter the token you obtained to register the Runner:
 
     ```
-    Please enter the gitlab-ci token for this runner
+    Please enter the token for this runner
     xxx
     ```
 
-1. Enter a description for the Runner, you can change this later in GitLab's
-   UI:
+1. Enter a description for the Runner:
 
     ```
-    Please enter the gitlab-ci description for this runner
+    Please enter the description for this runner
     [hostame] my-runner
     ```
 
-1. Enter the [tags associated with the Runner][tags], you can change this later in GitLab's UI:
+1. Enter the [tags associated with the Runner][tags], you can change this later in AlloyCI's UI:
 
     ```
-    Please enter the gitlab-ci tags for this runner (comma separated):
+    Please enter the tags for this runner (comma separated):
     my-tag,another-tag
     ```
 
 1. Choose whether the Runner should pick up jobs that do not [have tags][tags],
-   you can change this later in GitLab's UI (defaults to false):
+   you can change this later in AlloyCI's UI (defaults to false):
 
     ```
     Whether to run untagged jobs [true/false]:
@@ -202,7 +199,7 @@ To register a Runner under Windows:
     ```
 
 1. Choose whether to lock the Runner to the current project, you can change
-   this later in GitLab's UI. Useful when the Runner is specific (defaults to
+   this later in AlloyCI's UI. Useful when the Runner is specific (defaults to
    true):
 
     ```
@@ -218,7 +215,7 @@ To register a Runner under Windows:
     ```
 
 1. If you chose Docker as your executor, you'll be asked for the default
-   image to be used for projects that do not define one in `.gitlab-ci.yml`:
+   image to be used for projects that do not define one in `.alloy-ci.json`:
 
     ```
     Please enter the Docker image (eg. ruby:2.1):
@@ -226,7 +223,7 @@ To register a Runner under Windows:
     ```
 
 If you'd like to register multiple Runners on the same machine with different
-configurations repeat the `./gitlab-runner.exe register` command.
+configurations repeat the `./alloy-runner.exe register` command.
 
 ## FreeBSD
 
@@ -235,40 +232,39 @@ To register a Runner under FreeBSD:
 1. Run the following command:
 
     ```sh
-    sudo -u gitlab-runner -H /usr/local/bin/gitlab-runner register
+    sudo -u alloy-runner -H /usr/local/bin/alloy-runner register
     ```
 
-1. Enter your GitLab instance URL:
+1. Enter your AlloyCI instance URL:
 
     ```
-    Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com )
-    https://gitlab.com
+    Please enter the coordinator URL (e.g. https://alloy-ci.com )
+    https://alloy-ci.com
     ```
 
 1. Enter the token you obtained to register the Runner:
 
     ```
-    Please enter the gitlab-ci token for this runner
+    Please enter the token for this runner
     xxx
     ```
 
-1. Enter a description for the Runner, you can change this later in GitLab's
-   UI:
+1. Enter a description for the Runner:
 
     ```
-    Please enter the gitlab-ci description for this runner
+    Please enter the description for this runner
     [hostame] my-runner
     ```
 
-1. Enter the [tags associated with the Runner][tags], you can change this later in GitLab's UI:
+1. Enter the [tags associated with the Runner][tags], you can change this later in AlloyCI's UI:
 
     ```
-    Please enter the gitlab-ci tags for this runner (comma separated):
+    Please enter the tags for this runner (comma separated):
     my-tag,another-tag
     ```
 
 1. Choose whether the Runner should pick up jobs that do not [have tags][tags],
-   you can change this later in GitLab's UI (defaults to false):
+   you can change this later in AlloyCI's UI (defaults to false):
 
     ```
     Whether to run untagged jobs [true/false]:
@@ -276,8 +272,8 @@ To register a Runner under FreeBSD:
     ```
 
 1. Choose whether to lock the Runner to the current project, you can change
-   this later in GitLab's UI. Useful when the Runner is specific (defaults to
-   false):
+   this later in AlloyCI's UI. Useful when the Runner is specific (defaults to
+   true):
 
     ```
     Whether to lock Runner to current project [true/false]:
@@ -292,7 +288,7 @@ To register a Runner under FreeBSD:
     ```
 
 1. If you chose Docker as your executor, you'll be asked for the default
-   image to be used for projects that do not define one in `.gitlab-ci.yml`:
+   image to be used for projects that do not define one in `.alloy-ci.json`:
 
     ```
     Please enter the Docker image (eg. ruby:2.1):
@@ -306,40 +302,39 @@ To register a Runner using a Docker container:
 1. Run the following command:
 
     ```sh
-    docker exec -it gitlab-runner gitlab-runner register
+    docker exec -it alloy-runner alloy-runner register
     ```
 
-1. Enter your GitLab instance URL:
+1. Enter your AlloyCI instance URL:
 
     ```
-    Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com )
-    https://gitlab.com
+    Please enter the coordinator URL (e.g. https://alloy-ci.com )
+    https://alloy-ci.com
     ```
 
 1. Enter the token you obtained to register the Runner:
 
     ```
-    Please enter the gitlab-ci token for this runner
+    Please enter the token for this runner
     xxx
     ```
 
-1. Enter a description for the Runner, you can change this later in GitLab's
-   UI:
+1. Enter a description for the Runner:
 
     ```
-    Please enter the gitlab-ci description for this runner
+    Please enter the description for this runner
     [hostame] my-runner
     ```
 
-1. Enter the [tags associated with the Runner][tags], you can change this later in GitLab's UI:
+1. Enter the [tags associated with the Runner][tags], you can change this later in AlloyCI's UI:
 
     ```
-    Please enter the gitlab-ci tags for this runner (comma separated):
+    Please enter the tags for this runner (comma separated):
     my-tag,another-tag
     ```
 
 1. Choose whether the Runner should pick up jobs that do not [have tags][tags],
-   you can change this later in GitLab's UI (defaults to false):
+   you can change this later in AlloyCI's UI (defaults to false):
 
     ```
     Whether to run untagged jobs [true/false]:
@@ -347,7 +342,7 @@ To register a Runner using a Docker container:
     ```
 
 1. Choose whether to lock the Runner to the current project, you can change
-   this later in GitLab's UI. Useful when the Runner is specific (defaults to
+   this later in AlloyCI's UI. Useful when the Runner is specific (defaults to
    true):
 
     ```
@@ -363,11 +358,11 @@ To register a Runner using a Docker container:
     ```
 
 1. If you chose Docker as your executor, you'll be asked for the default
-   image to be used for projects that do not define one in `.gitlab-ci.yml`:
+   image to be used for projects that do not define one in `.alloy-ci.json`:
 
     ```
     Please enter the Docker image (eg. ruby:2.1):
     alpine:latest
     ```
 
-[tags]: https://docs.gitlab.com/ce/ci/runners/#using-tags
+[tags]: https://docs.alloy.com/ce/ci/runners/#using-tags

@@ -1,18 +1,18 @@
-# GitLab Runner Commands
+# Alloy Runner Commands
 
-GitLab Runner contains a set of commands with which you register, manage and
+Alloy Runner contains a set of commands with which you register, manage and
 run your builds.
 
 You can check a recent list of commands by executing:
 
 ```bash
-gitlab-runner --help
+alloy-runner --help
 ```
 
 Append `--help` after a command to see its specific help page:
 
 ```bash
-gitlab-runner <command> --help
+alloy-runner <command> --help
 ```
 
 ## Using environment variables
@@ -25,20 +25,20 @@ specific command. For example, you can see below the help message for the `run`
 command:
 
 ```bash
-gitlab-runner run --help
+alloy-runner run --help
 ```
 
 The output would be similar to:
 
 ```bash
 NAME:
-   gitlab-runner run - run multi runner service
+   alloy-runner run - run multi runner service
 
 USAGE:
-   gitlab-runner run [command options] [arguments...]
+   alloy-runner run [command options] [arguments...]
 
 OPTIONS:
-   -c, --config "/Users/ayufan/.gitlab-runner/config.toml"	Config file [$CONFIG_FILE]
+   -c, --config "/Users/username/.alloy-runner/config.toml"	Config file [$CONFIG_FILE]
 ```
 
 ## Running in debug mode
@@ -49,12 +49,12 @@ behavior or error.
 To run a command in debug mode, prepend the command with `--debug`:
 
 ```bash
-gitlab-runner --debug <command>
+alloy-runner --debug <command>
 ```
 
 ## Super-user permission
 
-Commands that access the configuration of GitLab Runner behave differently when
+Commands that access the configuration of AlloyCI Runner behave differently when
 executed as super-user (`root`). The file location depends on the user executing
 the command.
 
@@ -62,21 +62,21 @@ Be aware of the notice that is written when executing the commands that are
 used for running builds, registering services or managing registered runners:
 
 ```bash
-gitlab-runner run
+alloy-runner run
 
-INFO[0000] Starting multi-runner from /Users/ayufan/.gitlab-runner/config.toml ...  builds=0
+INFO[0000] Starting multi-runner from /Users/username/.alloy-runner/config.toml ...  builds=0
 WARN[0000] Running in user-mode.
 WARN[0000] Use sudo for system-mode:
-WARN[0000] $ sudo gitlab-runner...
+WARN[0000] $ sudo alloy-runner...
 ```
 
 You should use `user-mode` if you are really sure that this is a mode that you
 want to work with. Otherwise, prefix your command with `sudo`:
 
 ```
-sudo gitlab-runner run
+sudo alloy-runner run
 
-INFO[0000] Starting multi-runner from /etc/gitlab-runner/config.toml ...  builds=0
+INFO[0000] Starting multi-runner from /etc/alloy-runner/config.toml ...  builds=0
 INFO[0000] Running in system-mode.
 ```
 
@@ -85,13 +85,13 @@ In the case of **Windows** you may need to run the **Command Prompt** in
 
 ## Configuration file
 
-GitLab Runner configuration uses the [TOML] format.
+Alloy Runner configuration uses the [TOML] format.
 
 The file to be edited can be found in:
 
-1. `/etc/gitlab-runner/config.toml` on \*nix systems when gitlab-runner is
+1. `/etc/alloy-runner/config.toml` on \*nix systems when alloy-runner is
    executed as super-user (`root`)
-1. `~/.gitlab-runner/config.toml` on \*nix systems when gitlab-runner is
+1. `~/.alloy-runner/config.toml` on \*nix systems when alloy-runner is
    executed as non-root
 1. `./config.toml` on other systems
 
@@ -104,7 +104,7 @@ the `CONFIG_FILE` environment variable.
 
 ## Signals
 
-It is possible to use system signals to interact with GitLab Runner. The
+It is possible to use system signals to interact with AlloyCI Runner. The
 following commands support the following signals:
 
 | Command | Signal | Action |
@@ -118,20 +118,20 @@ If your operating system is configured to automatically restart the service if i
 
 ## Commands overview
 
-This is what you see if you run `gitlab-runner` without any arguments:
+This is what you see if you run `alloy-runner` without any arguments:
 
 ```bash
 NAME:
-   gitlab-runner - a GitLab Runner
+   alloy-runner - a AlloyCI Runner
 
 USAGE:
-   gitlab-runner [global options] command [command options] [arguments...]
+   alloy-runner [global options] command [command options] [arguments...]
 
 VERSION:
    1.0.0~beta.142.ga8d37f3 (a8d37f3)
 
 AUTHOR(S):
-   GitLab Inc. <support@gitlab.com>
+   Patricio Cano <support@alloy-ci.com>
 
 COMMANDS:
    exec		execute a build locally
@@ -159,12 +159,12 @@ Below we will explain what each command does in detail.
 The following commands allow you to register a new runner, or list and verify
 them if they are still registered.
 
-- [gitlab-runner register](#gitlab-runner-register)
+- [alloy-runner register](#alloy-runner-register)
     - [Interactive registration](#interactive-registration)
     - [Non-interactive registration](#non-interactive-registration)
-- [gitlab-runner list](#gitlab-runner-list)
-- [gitlab-runner verify](#gitlab-runner-verify)
-- [gitlab-runner unregister](#gitlab-runner-unregister)
+- [alloy-runner list](#alloy-runner-list)
+- [alloy-runner verify](#alloy-runner-verify)
+- [alloy-runner unregister](#alloy-runner-unregister)
 
 The above commands support the following arguments:
 
@@ -172,12 +172,12 @@ The above commands support the following arguments:
 |-------------|---------|-------------|
 | `--config`  | See the [configuration file section](#configuration-file) | Specify a custom configuration file to be used |
 
-### gitlab-runner register
+### alloy-runner register
 
-This command registers your GitLab Runner in GitLab. The registered runner is
+This command registers your Alloy Runner in AlloyCI. The registered runner is
 added to the [configuration file](#configuration-file).
-You can use multiple configurations in a single GitLab Runner. Executing
-`gitlab-runner register` adds a new configuration entry, it doesn't remove the
+You can use multiple configurations in a single AlloyCI Runner. Executing
+`alloy-runner register` adds a new configuration entry, it doesn't remove the
 previous ones.
 
 There are two options to register a Runner, interactive and non-interactive.
@@ -189,19 +189,19 @@ asked multiple questions during a Runner's registration.
 
 This question can be pre-filled by adding arguments when invoking the registration command:
 
-    gitlab-runner register --name my-runner --url http://gitlab.example.com --registration-token my-registration-token
+    alloy-runner register --name my-runner --url http://alloyci.example.com --registration-token my-registration-token
 
 Or by configuring the environment variable before the `register` command:
 
-    export CI_SERVER_URL=http://gitlab.example.com
+    export CI_SERVER_URL=http://alloyci.example.com
     export RUNNER_NAME=my-runner
     export REGISTRATION_TOKEN=my-registration-token
     export REGISTER_NON_INTERACTIVE=true
-    gitlab-runner register
+    alloy-runner register
 
 To check all possible arguments and environments execute:
 
-    gitlab-runner register --help
+    alloy-runner register --help
 
 #### Non-interactive registration
 
@@ -209,25 +209,25 @@ It's possible to use registration in non-interactive / unattended mode.
 
 You can specify the arguments when invoking the registration command:
 
-    gitlab-runner register --non-interactive <other-arguments>
+    alloy-runner register --non-interactive <other-arguments>
 
 Or by configuring the environment variable before the `register` command:
 
     <other-environment-variables>
     export REGISTER_NON_INTERACTIVE=true
-    gitlab-runner register
-    
+    alloy-runner register
+
 > **Note:** Boolean parameters must be passed in the command line with `--key={true|false}`.
 
-### gitlab-runner list
+### alloy-runner list
 
 This command lists all runners saved in the
 [configuration file](#configuration-file).
 
-### gitlab-runner verify
+### alloy-runner verify
 
-This command checks if the registered runners can connect to GitLab, but it
-doesn't verify if the runners are being used by the GitLab Runner service. An
+This command checks if the registered runners can connect to AlloyCI, but it
+doesn't verify if the runners are being used by the AlloyCI Runner service. An
 example output is:
 
 ```bash
@@ -237,7 +237,7 @@ Verifying runner... is alive                        runner=826f687f
 Verifying runner... is alive                        runner=32773c0f
 ```
 
-To delete the old and removed from GitLab runners, execute the following
+To delete the old and removed from AlloyCI runners, execute the following
 command.
 
 >**Warning:**
@@ -245,20 +245,20 @@ This operation cannot be undone, it will update the configuration file, so
 make sure to have a backup of `config.toml` before executing it.
 
 ```bash
-gitlab-runner verify --delete
+alloy-runner verify --delete
 ```
 
-### gitlab-runner unregister
+### alloy-runner unregister
 
 This command allows to unregister one of the registered runners. It expects
 either a full URL and the runner's token, or the runner's name. With the
 `--all-runners` option it will unregister all the attached runners.
 
 To unregister a specific runner, first get the runner's details by executing
-`gitlab-runner list`:
+`alloy-runner list`:
 
 ```bash
-test-runner     Executor=shell Token=t0k3n URL=http://gitlab.example.com
+test-runner     Executor=shell Token=t0k3n URL=http://alloyci.example.com
 ```
 
 Then use this information to unregister it, using one of the following commands.
@@ -270,7 +270,7 @@ make sure to have a backup of `config.toml` before executing it.
 #### By URL and token:
 
 ```bash
-gitlab-runner unregister --url http://gitlab.example.com/ --token t0k3n
+alloy-runner unregister --url http://alloyci.example.com/ --token t0k3n
 ```
 
 #### By name:
@@ -278,29 +278,29 @@ gitlab-runner unregister --url http://gitlab.example.com/ --token t0k3n
 > **Note:** If there is more than one runner with the given name, only the first one will be removed
 
 ```bash
-gitlab-runner unregister --name test-runner
+alloy-runner unregister --name test-runner
 ```
 
 #### All Runners:
 
 ```bash
-gitlab-runner unregister --all-runners
+alloy-runner unregister --all-runners
 ```
 
 ## Service-related commands
 
-> **Note:** Starting with GitLab Runner 10.0, service-related commands are **deprecated**
+> **Note:** Starting with AlloyCI Runner 1.0.0, service-related commands are **deprecated**
 and will be removed in one of the upcoming releases.
 
 The following commands allow you to manage the runner as a system or user
 service. Use them to install, uninstall, start and stop the runner service.
 
-- [gitlab-runner install](#gitlab-runner-install)
-- [gitlab-runner uninstall](#gitlab-runner-uninstall)
-- [gitlab-runner start](#gitlab-runner-start)
-- [gitlab-runner stop](#gitlab-runner-stop)
-- [gitlab-runner restart](#gitlab-runner-restart)
-- [gitlab-runner status](#gitlab-runner-status)
+- [alloy-runner install](#alloy-runner-install)
+- [alloy-runner uninstall](#alloy-runner-uninstall)
+- [alloy-runner start](#alloy-runner-start)
+- [alloy-runner stop](#alloy-runner-stop)
+- [alloy-runner restart](#alloy-runner-restart)
+- [alloy-runner status](#alloy-runner-status)
 - [Multiple services](#multiple-services)
 - [**Access Denied** when running the service-related commands](#access-denied-when-running-the-service-related-commands)
 
@@ -308,12 +308,12 @@ All service related commands accept these arguments:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--service` | `gitlab-runner` | Specify custom service name |
+| `--service` | `alloy-runner` | Specify custom service name |
 | `--config` | See the [configuration file](#configuration-file) | Specify a custom configuration file to use |
 
-### gitlab-runner install
+### alloy-runner install
 
-This command installs GitLab Runner as a service. It accepts different sets of
+This command installs AlloyCI Runner as a service. It accepts different sets of
 arguments depending on which system it's run on.
 
 When run on **Windows** or as super-user, it accepts the `--user` flag which
@@ -321,44 +321,44 @@ allows you to drop privileges of builds run with the **shell** executor.
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--service`      | `gitlab-runner` | Specify a custom name for the Runner |
+| `--service`      | `alloy-runner` | Specify a custom name for the Runner |
 | `--working-directory` | the current directory | Specify the root directory where all data will be stored when builds will be run with the **shell** executor |
 | `--user`              | `root` | Specify the user which will be used to execute builds |
 | `--password`          | none   | Specify the password for the user that will be used to execute the builds |
 
-### gitlab-runner uninstall
+### alloy-runner uninstall
 
-This command stops and uninstalls the GitLab Runner from being run as an
+This command stops and uninstalls the AlloyCI Runner from being run as an
 service.
 
-### gitlab-runner start
+### alloy-runner start
 
-This command starts the GitLab Runner service.
+This command starts the AlloyCI Runner service.
 
-### gitlab-runner stop
+### alloy-runner stop
 
-This command stops the GitLab Runner service.
+This command stops the AlloyCI Runner service.
 
-### gitlab-runner restart
+### alloy-runner restart
 
-This command stops and then starts the GitLab Runner service.
+This command stops and then starts the AlloyCI Runner service.
 
-### gitlab-runner status
+### alloy-runner status
 
-This command prints the status of the GitLab Runner service. The exit code is zero when the service is running and non-zero when the service is not running.
+This command prints the status of the AlloyCI Runner service. The exit code is zero when the service is running and non-zero when the service is not running.
 
 ### Multiple services
 
-By specifying the `--service` flag, it is possible to have multiple GitLab
+By specifying the `--service` flag, it is possible to have multiple AlloyCI
 Runner services installed, with multiple separate configurations.
 
 ## Run-related commands
 
-This command allows to fetch and process builds from GitLab.
+This command allows to fetch and process builds from AlloyCI.
 
-### gitlab-runner run
+### alloy-runner run
 
-This is main command that is executed when GitLab Runner is started as a
+This is main command that is executed when AlloyCI Runner is started as a
 service. It reads all defined Runners from `config.toml` and tries to run all
 of them.
 
@@ -374,23 +374,23 @@ It accepts the following parameters.
 | `--syslog`  | `false` | Send all logs to SysLog (Unix) or EventLog (Windows) |
 | `--metrics-server` | empty | Address (`<host>:<port>`) on which the Prometheus metrics HTTP server should be listening |
 
-### gitlab-runner run-single
+### alloy-runner run-single
 
 This is a supplementary command that can be used to run only a single build
-from a single GitLab instance. It doesn't use any configuration file and
+from a single AlloyCI instance. It doesn't use any configuration file and
 requires to pass all options either as parameters or environment variables.
-The GitLab URL and Runner token need to be specified too.
+The AlloyCI URL and Runner token need to be specified too.
 
 For example:
 
 ```bash
-gitlab-runner run-single -u http://gitlab.example.com -t my-runner-token --executor docker --docker-image ruby:2.1
+alloy-runner run-single -u http://alloyci.example.com -t my-runner-token --executor docker --docker-image ruby:2.1
 ```
 
 You can see all possible configuration options by using the `--help` flag:
 
 ```bash
-gitlab-runner run-single --help
+alloy-runner run-single --help
 ```
 
 You can use the `--max-builds` option to control how many builds the runner will execute before exiting.  The
@@ -399,75 +399,24 @@ default of `0` means that the runner has no build limit and will run jobs foreve
 You can also use the `--wait-timeout` option to control how long the runner will wait for a job before
 exiting.  The default of `0` means that the runner has no timeout and will wait forever between jobs.
 
-### gitlab-runner exec
-
-> **Note:** Starting with GitLab Runner 10.0, the `exec` command is **deprecated**
-and will be removed in one of the upcoming releases.
-
-This command allows you to run builds locally, trying to replicate the CI
-environment as much as possible. It doesn't need to connect to GitLab, instead
-it reads the local `.gitlab-ci.yml` and creates a new build environment in
-which all the build steps are executed.
-
-This command is useful for fast checking and verifying `.gitlab-ci.yml` as well
-as debugging broken builds since everything is run locally.
-
-When executing `exec` you need to specify the executor and the job name that is
-present in `.gitlab-ci.yml`. The command should be executed from the root
-directory of your Git repository that contains `.gitlab-ci.yml`.
-
-`gitlab-runner exec` will clone the current state of the local Git repository.
-Make sure you have committed any changes you want to test beforehand.
-
-For example, the following command will execute the job named **tests** locally
-using a shell executor:
-
-```bash
-gitlab-runner exec shell tests
-```
-
-To see a list of available executors, run:
-
-```bash
-gitlab-runner exec
-```
-
-To see a list of all available options for the `shell` executor, run:
-
-```bash
-gitlab-runner exec shell
-```
-
-If you want to use the `docker` executor with the `exec` command, use that in
-context of `docker-machine shell` or `boot2docker shell`. This is required to
-properly map your local directory to the directory inside the Docker container.
-
-### Limitations of `gitlab-runner exec`
-
-Some of the features may or may not work, like: `cache` or `artifacts`.
-
-`gitlab-runner exec docker` can only be used when Docker is installed locally.
-This is needed because GitLab Runner is using host-bind volumes to access the
-Git sources.
-
 ## Internal commands
 
-GitLab Runner is distributed as a single binary and contains a few internal
+AlloyCI Runner is distributed as a single binary and contains a few internal
 commands that are used during builds.
 
-### gitlab-runner artifacts-downloader
+### alloy-runner artifacts-downloader
 
-Download the artifacts archive from GitLab.
+Download the artifacts archive from AlloyCI.
 
-### gitlab-runner artifacts-uploader
+### alloy-runner artifacts-uploader
 
-Upload the artifacts archive to GitLab.
+Upload the artifacts archive to AlloyCI.
 
-### gitlab-runner cache-archiver
+### alloy-runner cache-archiver
 
 Create a cache archive, store it locally or upload it to an external server.
 
-### gitlab-runner cache-extractor
+### alloy-runner cache-extractor
 
 Restore the cache archive from a locally or externally stored file.
 
@@ -480,7 +429,7 @@ Below are some common pitfalls.
 Usually the [service related commands](#service-related-commands) require
 administrator privileges:
 
-- On Unix (Linux, OSX, FreeBSD) systems, prefix `gitlab-runner` with `sudo`
+- On Unix (Linux, OSX, FreeBSD) systems, prefix `alloy-runner` with `sudo`
 - On Windows systems use the elevated command prompt.
   Run an `Administrator` command prompt ([How to][prompt]).
   The simplest way is to write `Command Prompt` in the Windows search field,

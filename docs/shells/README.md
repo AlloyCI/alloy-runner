@@ -1,6 +1,6 @@
-# Shells supported by GitLab Runner
+# Shells supported by AlloyCI Runner
 
-GitLab Runner implements a few shell script generators that allow to execute
+AlloyCI Runner implements a few shell script generators that allow to execute
 builds on different systems.
 
 ## Overview
@@ -14,7 +14,7 @@ The shell scripts contain commands to execute all steps of the build:
 1. Generate and upload the build artifacts
 
 The shells don't have any configuration options. The build steps are received
-from the commands defined in the [`script` directive in `.gitlab-ci.yml`][script].
+from the commands defined in the [`script` directive in `.alloy-ci.json`][script].
 
 The currently supported shells are:
 
@@ -28,7 +28,7 @@ The currently supported shells are:
 ## Sh/Bash shells
 
 This is the default shell used on all Unix based systems. The bash script used
-in `.gitlab-ci.yml` is executed by piping the shell script to one of the
+in `.alloy-ci.json` is executed by piping the shell script to one of the
 following commands:
 
 ```bash
@@ -84,26 +84,26 @@ SET CI_COMMIT_REF=db45ad9af9d7af5e61b829442fd893d96e31250c
 SET CI_COMMIT_BEFORE_SHA=d63117656af6ff57d99e50cc270f854691f335ad
 SET CI_COMMIT_REF_NAME=master
 SET CI_JOB_ID=1
-SET CI_REPOSITORY_URL=http://gitlab.example.com/group/project.git
+SET CI_REPOSITORY_URL=http://alloy.example.com/group/project.git
 SET CI_PROJECT_ID=1
 SET CI_PROJECT_DIR=Z:/Gitlab/tests/test/builds/0/project-1
 SET CI_SERVER=yes
-SET CI_SERVER_NAME=GitLab CI
+SET CI_SERVER_NAME=AlloyCI CI
 SET CI_SERVER_VERSION=
 SET CI_SERVER_REVISION=
 SET GITLAB_CI=true
-md "C:\\GitLab-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
-echo multiline!nl!tls!nl!chain > C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
-SET GIT_SSL_CAINFO=C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
-md "C:\\GitLab-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
-echo multiline!nl!tls!nl!chain > C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
-SET CI_SERVER_TLS_CA_FILE=C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
+md "C:\\AlloyCI-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
+echo multiline!nl!tls!nl!chain > C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
+SET GIT_SSL_CAINFO=C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
+md "C:\\AlloyCI-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
+echo multiline!nl!tls!nl!chain > C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
+SET CI_SERVER_TLS_CA_FILE=C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
 echo Cloning repository...
-rd /s /q "C:\GitLab-Runner\builds\0\project-1" 2>NUL 1>NUL
-"git" "clone" "http://gitlab.example.com/group/project.git" "Z:/Gitlab/tests/test/builds/0/project-1"
+rd /s /q "C:\AlloyCI-Runner\builds\0\project-1" 2>NUL 1>NUL
+"git" "clone" "http://alloy.example.com/group/project.git" "Z:/Gitlab/tests/test/builds/0/project-1"
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
-cd /D "C:\GitLab-Runner\builds\0\project-1"
+cd /D "C:\AlloyCI-Runner\builds\0\project-1"
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 echo Checking out db45ad9a as master...
@@ -112,13 +112,13 @@ IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 IF EXIST "..\..\..\cache\project-1\pages\master\cache.tgz" (
   echo Restoring cache...
-  "gitlab-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
+  "alloy-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
   IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 ) ELSE (
   IF EXIST "..\..\..\cache\project-1\pages\master\cache.tgz" (
     echo Restoring cache...
-    "gitlab-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
+    "alloy-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
     IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
   )
@@ -135,17 +135,17 @@ SET CI_REPOSITORY_URL=Z:\Gitlab\tests\test
 SET CI_PROJECT_ID=1
 SET CI_PROJECT_DIR=Z:/Gitlab/tests/test/builds/0/project-1
 SET CI_SERVER=yes
-SET CI_SERVER_NAME=GitLab CI
+SET CI_SERVER_NAME=AlloyCI
 SET CI_SERVER_VERSION=
 SET CI_SERVER_REVISION=
 SET GITLAB_CI=true
-md "C:\\GitLab-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
-echo multiline!nl!tls!nl!chain > C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
-SET GIT_SSL_CAINFO=C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
-md "C:\\GitLab-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
-echo multiline!nl!tls!nl!chain > C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
-SET CI_SERVER_TLS_CA_FILE=C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
-cd /D "C:\GitLab-Runner\builds\0\project-1"
+md "C:\\AlloyCI-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
+echo multiline!nl!tls!nl!chain > C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
+SET GIT_SSL_CAINFO=C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
+md "C:\\AlloyCI-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
+echo multiline!nl!tls!nl!chain > C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
+SET CI_SERVER_TLS_CA_FILE=C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
+cd /D "C:\AlloyCI-Runner\builds\0\project-1"
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 echo $ echo true
@@ -162,21 +162,21 @@ SET CI_REPOSITORY_URL=Z:\Gitlab\tests\test
 SET CI_PROJECT_ID=1
 SET CI_PROJECT_DIR=Z:/Gitlab/tests/test/builds/0/project-1
 SET CI_SERVER=yes
-SET CI_SERVER_NAME=GitLab CI
+SET CI_SERVER_NAME=AlloyCI
 SET CI_SERVER_VERSION=
 SET CI_SERVER_REVISION=
 SET GITLAB_CI=true
-md "C:\\GitLab-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
-echo multiline!nl!tls!nl!chain > C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
-SET GIT_SSL_CAINFO=C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
-md "C:\\GitLab-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
-echo multiline!nl!tls!nl!chain > C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
-SET CI_SERVER_TLS_CA_FILE=C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
-cd /D "C:\GitLab-Runner\builds\0\project-1"
+md "C:\\AlloyCI-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
+echo multiline!nl!tls!nl!chain > C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
+SET GIT_SSL_CAINFO=C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO
+md "C:\\AlloyCI-Runner\\builds\\0\\project-1.tmp" 2>NUL 1>NUL
+echo multiline!nl!tls!nl!chain > C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
+SET CI_SERVER_TLS_CA_FILE=C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE
+cd /D "C:\AlloyCI-Runner\builds\0\project-1"
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 echo Archiving cache...
-"gitlab-runner-windows-amd64.exe" "archive" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz" "--path" "vendor"
+"alloy-runner-windows-amd64.exe" "archive" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz" "--path" "vendor"
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 goto :EOF
@@ -219,7 +219,7 @@ echo "Running on $env:computername..."
   $env:CI_PROJECT_DIR=$CI_PROJECT_DIR
   $CI_SERVER="yes"
   $env:CI_SERVER=$CI_SERVER
-  $CI_SERVER_NAME="GitLab CI"
+  $CI_SERVER_NAME="AlloyCI CI"
   $env:CI_SERVER_NAME=$CI_SERVER_NAME
   $CI_SERVER_VERSION=""
   $env:CI_SERVER_VERSION=$CI_SERVER_VERSION
@@ -228,26 +228,26 @@ echo "Running on $env:computername..."
   $GITLAB_CI="true"
   $env:GITLAB_CI=$GITLAB_CI
   $GIT_SSL_CAINFO=""
-  md "C:\GitLab-Runner\builds\0\project-1.tmp" -Force | out-null
-  $GIT_SSL_CAINFO | Out-File "C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
-  $GIT_SSL_CAINFO="C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
+  md "C:\AlloyCI-Runner\builds\0\project-1.tmp" -Force | out-null
+  $GIT_SSL_CAINFO | Out-File "C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
+  $GIT_SSL_CAINFO="C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
   $env:GIT_SSL_CAINFO=$GIT_SSL_CAINFO
   $CI_SERVER_TLS_CA_FILE=""
-  md "C:\GitLab-Runner\builds\0\project-1.tmp" -Force | out-null
-  $CI_SERVER_TLS_CA_FILE | Out-File "C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
-  $CI_SERVER_TLS_CA_FILE="C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
+  md "C:\AlloyCI-Runner\builds\0\project-1.tmp" -Force | out-null
+  $CI_SERVER_TLS_CA_FILE | Out-File "C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
+  $CI_SERVER_TLS_CA_FILE="C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
   $env:CI_SERVER_TLS_CA_FILE=$CI_SERVER_TLS_CA_FILE
   echo "Cloning repository..."
-  if( (Get-Command -Name Remove-Item2 -Module NTFSSecurity -ErrorAction SilentlyContinue) -and (Test-Path "C:\GitLab-Runner\builds\0\project-1" -PathType Container) ) {
-    Remove-Item2 -Force -Recurse "C:\GitLab-Runner\builds\0\project-1"
-  } elseif(Test-Path "C:\GitLab-Runner\builds\0\project-1") {
-    Remove-Item -Force -Recurse "C:\GitLab-Runner\builds\0\project-1"
+  if( (Get-Command -Name Remove-Item2 -Module NTFSSecurity -ErrorAction SilentlyContinue) -and (Test-Path "C:\AlloyCI-Runner\builds\0\project-1" -PathType Container) ) {
+    Remove-Item2 -Force -Recurse "C:\AlloyCI-Runner\builds\0\project-1"
+  } elseif(Test-Path "C:\AlloyCI-Runner\builds\0\project-1") {
+    Remove-Item -Force -Recurse "C:\AlloyCI-Runner\builds\0\project-1"
   }
 
-  & "git" "clone" "https://gitlab.com/group/project.git" "Z:/Gitlab/tests/test/builds/0/project-1"
+  & "git" "clone" "https://alloy.com/group/project.git" "Z:/Gitlab/tests/test/builds/0/project-1"
   if(!$?) { Exit $LASTEXITCODE }
 
-  cd "C:\GitLab-Runner\builds\0\project-1"
+  cd "C:\AlloyCI-Runner\builds\0\project-1"
   if(!$?) { Exit $LASTEXITCODE }
 
   echo "Checking out db45ad9a as master..."
@@ -256,13 +256,13 @@ echo "Running on $env:computername..."
 
   if(Test-Path "..\..\..\cache\project-1\pages\master\cache.tgz" -PathType Leaf) {
     echo "Restoring cache..."
-    & "gitlab-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
+    & "alloy-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
     if(!$?) { Exit $LASTEXITCODE }
 
   } else {
     if(Test-Path "..\..\..\cache\project-1\pages\master\cache.tgz" -PathType Leaf) {
       echo "Restoring cache..."
-      & "gitlab-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
+      & "alloy-runner-windows-amd64.exe" "extract" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz"
       if(!$?) { Exit $LASTEXITCODE }
 
     }
@@ -289,7 +289,7 @@ if(!$?) { Exit $LASTEXITCODE }
   $env:CI_PROJECT_DIR=$CI_PROJECT_DIR
   $CI_SERVER="yes"
   $env:CI_SERVER=$CI_SERVER
-  $CI_SERVER_NAME="GitLab CI"
+  $CI_SERVER_NAME="AlloyCI"
   $env:CI_SERVER_NAME=$CI_SERVER_NAME
   $CI_SERVER_VERSION=""
   $env:CI_SERVER_VERSION=$CI_SERVER_VERSION
@@ -298,16 +298,16 @@ if(!$?) { Exit $LASTEXITCODE }
   $GITLAB_CI="true"
   $env:GITLAB_CI=$GITLAB_CI
   $GIT_SSL_CAINFO=""
-  md "C:\GitLab-Runner\builds\0\project-1.tmp" -Force | out-null
-  $GIT_SSL_CAINFO | Out-File "C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
-  $GIT_SSL_CAINFO="C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
+  md "C:\AlloyCI-Runner\builds\0\project-1.tmp" -Force | out-null
+  $GIT_SSL_CAINFO | Out-File "C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
+  $GIT_SSL_CAINFO="C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
   $env:GIT_SSL_CAINFO=$GIT_SSL_CAINFO
   $CI_SERVER_TLS_CA_FILE=""
-  md "C:\GitLab-Runner\builds\0\project-1.tmp" -Force | out-null
-  $CI_SERVER_TLS_CA_FILE | Out-File "C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
-  $CI_SERVER_TLS_CA_FILE="C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
+  md "C:\AlloyCI-Runner\builds\0\project-1.tmp" -Force | out-null
+  $CI_SERVER_TLS_CA_FILE | Out-File "C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
+  $CI_SERVER_TLS_CA_FILE="C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
   $env:CI_SERVER_TLS_CA_FILE=$CI_SERVER_TLS_CA_FILE
-  cd "C:\GitLab-Runner\builds\0\project-1"
+  cd "C:\AlloyCI-Runner\builds\0\project-1"
   if(!$?) { Exit $LASTEXITCODE }
 
   echo "`$ echo true"
@@ -334,7 +334,7 @@ if(!$?) { Exit $LASTEXITCODE }
   $env:CI_PROJECT_DIR=$CI_PROJECT_DIR
   $CI_SERVER="yes"
   $env:CI_SERVER=$CI_SERVER
-  $CI_SERVER_NAME="GitLab CI"
+  $CI_SERVER_NAME="AlloyCI"
   $env:CI_SERVER_NAME=$CI_SERVER_NAME
   $CI_SERVER_VERSION=""
   $env:CI_SERVER_VERSION=$CI_SERVER_VERSION
@@ -343,24 +343,24 @@ if(!$?) { Exit $LASTEXITCODE }
   $GITLAB_CI="true"
   $env:GITLAB_CI=$GITLAB_CI
   $GIT_SSL_CAINFO=""
-  md "C:\GitLab-Runner\builds\0\project-1.tmp" -Force | out-null
-  $GIT_SSL_CAINFO | Out-File "C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
-  $GIT_SSL_CAINFO="C:\GitLab-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
+  md "C:\AlloyCI-Runner\builds\0\project-1.tmp" -Force | out-null
+  $GIT_SSL_CAINFO | Out-File "C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
+  $GIT_SSL_CAINFO="C:\AlloyCI-Runner\builds\0\project-1.tmp\GIT_SSL_CAINFO"
   $env:GIT_SSL_CAINFO=$GIT_SSL_CAINFO
   $CI_SERVER_TLS_CA_FILE=""
-  md "C:\GitLab-Runner\builds\0\project-1.tmp" -Force | out-null
-  $CI_SERVER_TLS_CA_FILE | Out-File "C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
-  $CI_SERVER_TLS_CA_FILE="C:\GitLab-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
+  md "C:\AlloyCI-Runner\builds\0\project-1.tmp" -Force | out-null
+  $CI_SERVER_TLS_CA_FILE | Out-File "C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
+  $CI_SERVER_TLS_CA_FILE="C:\AlloyCI-Runner\builds\0\project-1.tmp\CI_SERVER_TLS_CA_FILE"
   $env:CI_SERVER_TLS_CA_FILE=$CI_SERVER_TLS_CA_FILE
-  cd "C:\GitLab-Runner\builds\0\project-1"
+  cd "C:\AlloyCI-Runner\builds\0\project-1"
   if(!$?) { Exit $LASTEXITCODE }
 
   echo "Archiving cache..."
-  & "gitlab-runner-windows-amd64.exe" "archive" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz" "--path" "vendor"
+  & "alloy-runner-windows-amd64.exe" "archive" "--file" "..\..\..\cache\project-1\pages\master\cache.tgz" "--path" "vendor"
   if(!$?) { Exit $LASTEXITCODE }
 
 }
 if(!$?) { Exit $LASTEXITCODE }
 ```
 
-[script]: http://doc.gitlab.com/ce/ci/yaml/README.html#script
+[script]: https://github.com/AlloyCI/alloy_ci/tree/master/doc/json/README.md#script

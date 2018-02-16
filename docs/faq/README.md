@@ -1,25 +1,25 @@
-# GitLab Runner FAQ
+# AlloyCI Runner FAQ
 
-Some Frequently Asked Questions about GitLab Runner.
+Some Frequently Asked Questions about AlloyCI Runner.
 
 ## What does `coordinator` mean?
 
-The `coordinator` is the GitLab installation from which a job is requested.
+The `coordinator` is the AlloyCI installation from which a job is requested.
 
 In other words, runners are isolated (virtual) machines that pick up jobs
 requested by their `coordinator`.
 
 ## Where are logs stored when run as a service?
 
-+ If the GitLab Runner is run as service on Linux/OSX  the daemon logs to syslog.
-+ If the GitLab Runner is run as service on Windows it logs to System's Event Log.
++ If the AlloyCI Runner is run as service on Linux/OSX  the daemon logs to syslog.
++ If the AlloyCI Runner is run as service on Windows it logs to System's Event Log.
 
 ## Run in `--debug` mode
 
-Is it possible to run GitLab Runner in debug/verbose mode. From a terminal, do:
+Is it possible to run AlloyCI Runner in debug/verbose mode. From a terminal, do:
 
 ```
-gitlab-runner --debug run
+alloy-runner --debug run
 ```
 
 ## I get a PathTooLongException during my builds on Windows
@@ -32,7 +32,7 @@ adopt to solve the problem.
 
 You can avoid the problem by using Git to clean your directory structure, first run
 `git config --system core.longpaths true` from the command line and then set your
-project to use *git fetch* from the GitLab CI project settings page.
+project to use *git fetch* from the AlloyCI CI project settings page.
 
 ### b) Use NTFSSecurity tools for PowerShell
 
@@ -70,17 +70,20 @@ Upgrade your Nginx to newer version. For more information see this issue: https:
 
 ## I can't run Windows BASH scripts; I'm getting `The system cannot find the batch label specified - buildscript`.
 
-You need to prepend `call` to your batch file line in .gitlab-ci.yml so that it looks like `call C:\path\to\test.bat`. Here
+You need to prepend `call` to your batch file line in .alloy-ci.json so that it looks like `call C:\path\to\test.bat`. Here
 is a more complete example:
 
-```
-before_script:
-  - call C:\path\to\test.bat
+```json
+{
+  "before_script": [
+    "call C:\path\to\test.bat"
+  ]
+}
 ```
 
 Additional info can be found under issue [#1025](https://gitlab.com/gitlab-org/gitlab-runner/issues/1025).
 
-## My gitlab runner is on Windows. How can I get colored output on the web terminal?
+## My alloy runner is on Windows. How can I get colored output on the web terminal?
 
 **Short answer:**
 
@@ -89,7 +92,7 @@ running in a UNIX ANSI terminal emulator (because that's what the webUI's output
 
 **Long Answer:**
 
-The web interface for gitlab-ci emulates a UNIX ANSI terminal (at least partially). The `gitlab-runner` pipes any output from the build
+The web interface for alloy-ci emulates a UNIX ANSI terminal (at least partially). The `alloy-runner` pipes any output from the build
 directly to the web interface. That means that any ANSI color codes that are present will be honored.
 
 Windows' CMD terminal (before Win10 ([source](http://www.nivot.org/blog/post/2016/02/04/Windows-10-TH2-(v1511)-Console-Host-Enhancements)))
@@ -101,46 +104,10 @@ If your program is doing the above, then you need to disable that conversion for
 
 See issue [#332](https://gitlab.com/gitlab-org/gitlab-runner/issues/332) for more information.
 
-## "warning: You appear to have cloned an empty repository."
-
-When running `git clone` using HTTP(s) (with GitLab Runner or manually for
-tests) and you see the following output:
-
-```bash
-$ git clone https://git.example.com/user/repo.git
-
-Cloning into 'repo'...
-warning: You appear to have cloned an empty repository.
-```
-
-Make sure, that the configuration of the HTTP Proxy in your GitLab server
-installation is done properly. Especially if you are using some HTTP Proxy with
-its own configuration, make sure that GitLab requests are proxied to the
-**GitLab Workhorse socket**, not to the **GitLab unicorn socket**.
-
-Git protocol via HTTP(S) is resolved by the GitLab Workhorse, so this is the
-**main entrypoint** of GitLab.
-
-If you are using Omnibus GitLab, but don't want to use the bundled Nginx
-server, please read [using a non-bundled web-server][omnibus-ext-nginx].
-
-In gitlab-recipes repository there are [web-server configuration
-examples][recipes] for Apache and Nginx.
-
-If you are using GitLab installed from source, please also read the above
-documentation and examples, and make sure that all HTTP(S) traffic is going
-through the **GitLab Workhorse**.
-
-See [an example of a user issue][1105].
-
-[omnibus-ext-nginx]: http://doc.gitlab.com/omnibus/settings/nginx.html#using-a-non-bundled-web-server
-[recipes]: https://gitlab.com/gitlab-org/gitlab-recipes/tree/master/web-server
-[1105]: https://gitlab.com/gitlab-org/gitlab-runner/issues/1105
-
 ## `"launchctl" failed: exit status 112, Could not find domain for`
 
-This message may occur when you try to install GitLab Runner on OSX. Make sure
-that you manage GitLab Runner service from the GUI Terminal application, not
+This message may occur when you try to install AlloyCI Runner on OSX. Make sure
+that you manage AlloyCI Runner service from the GUI Terminal application, not
 the SSH connection.
 
 ## `Failed to authorize rights (0x1) with status: -60007.`
@@ -162,33 +129,33 @@ causes to why this happens:
     ---
 
 2. Make sure that your Runner service doesn't use `SessionCreate = true`.
-   Previously, when running GitLab Runner as a service, we were creating
+   Previously, when running AlloyCI Runner as a service, we were creating
    `LaunchAgents` with `SessionCreate`. At that point (**Mavericks**), this was
    the only solution to make Code Signing work. That changed recently with
    **OSX El Capitan** which introduced a lot of new security features that
    altered this behavior.
-   Since GitLab Runner 1.1, when creating a `LaunchAgent`, we don't set
+   Since AlloyCI Runner 1.1, when creating a `LaunchAgent`, we don't set
    `SessionCreate`. However, in order to upgrade, you need to manually
    reinstall the `LaunchAgent` script:
 
     ```
-    gitlab-runner uninstall
-    gitlab-runner install
-    gitlab-runner start
+    alloy-runner uninstall
+    alloy-runner install
+    alloy-runner start
     ```
 
-    Then you can verify that `~/Library/LaunchAgents/gitlab-runner.plist` has
+    Then you can verify that `~/Library/LaunchAgents/alloy-runner.plist` has
     `SessionCreate` set to `false`.
 
 ## `The service did not start due to a logon failure` error when starting service on Windows
 
-When installing and starting the GitLab Runner service on Windows you can
+When installing and starting the AlloyCI Runner service on Windows you can
 meet with such error:
 
 ```
-$ gitlab-runner install --password WINDOWS_MACHINE_PASSWORD
-$ gitlab-runner start
-$ FATA[0000] Failed to start GitLab Runner: The service did not start due to a logon failure.
+$ alloy-runner install --password WINDOWS_MACHINE_PASSWORD
+$ alloy-runner start
+$ FATA[0000] Failed to start AlloyCI Runner: The service did not start due to a logon failure.
 ```
 
 This error can occur when the user used to execute the service doesn't have
@@ -226,7 +193,7 @@ You can add `SeServiceLogonRight` in two ways:
      > on newest Windows versions**.
 
 After adding the `SeServiceLogonRight` for the user used in service configuration,
-the command `gitlab-runner start` should finish without failures
+the command `alloy-runner start` should finish without failures
 and the service should be started properly.
 
 [microsoft-manually-set-seservicelogonright]: https://technet.microsoft.com/en-us/library/dn221981
@@ -235,7 +202,7 @@ and the service should be started properly.
 
 ## `zoneinfo.zip: no such file or directory` error when using `OffPeakTimezone`
 
-In `v1.11.0` we made it possible to configure the timezone in which `OffPeakPeriods`
+It is possible to configure the timezone in which `OffPeakPeriods`
 are described. This feature should work on most Unix systems out of the box. However on some
 Unix systems, and probably on most non-Unix systems (including Windows, for which we're providing
 Runner's binaries), when used, the Runner will crash at start with an error similar to:
@@ -276,21 +243,21 @@ working by following the steps below:
 
 1. Store this file in a well known directory. We're suggesting to use the same directory where
    the `config.toml` file is present. So for example, if you're hosting Runner on Windows machine
-   and your config file is stored at `C:\gitlab-runner\config.toml`, then save the `zoneinfo.zip`
-   at `C:\gitlab-runner\zoneinfo.zip`.
+   and your config file is stored at `C:\alloy-runner\config.toml`, then save the `zoneinfo.zip`
+   at `C:\alloy-runner\zoneinfo.zip`.
 
 1. Set the `ZONEINFO` environment variable containing a full path to the `zoneinfo.zip` file. If you
    are starting the Runner using the `run` command, then you can do this with:
 
     ```bash
-    ZONEINFO=/etc/gitlab-runner/zoneinfo.zip gitlab-runner run [other options ...]
+    ZONEINFO=/etc/alloy-runner/zoneinfo.zip alloy-runner run [other options ...]
     ```
 
     or if using Windows:
 
     ```powershell
-    C:\gitlab-runner> set ZONEINFO=C:\gitlab-runner\zoneinfo.zip
-    C:\gitlab-runner> gitlab-runner run [other options ...]
+    C:\alloy-runner> set ZONEINFO=C:\alloy-runner\zoneinfo.zip
+    C:\alloy-runner> alloy-runner run [other options ...]
     ```
 
     If you are starting the Runner as a system service then you will need to update/override

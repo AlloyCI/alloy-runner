@@ -1,11 +1,11 @@
 # The Docker executor
 
-GitLab Runner can use Docker to run builds on user provided images. This is
+AlloyCI Runner can use Docker to run builds on user provided images. This is
 possible with the use of **Docker** executor.
 
-The **Docker** executor when used with GitLab CI, connects to [Docker Engine]
+The **Docker** executor when used with AlloyCI, connects to [Docker Engine]
 and runs each build in a separate and isolated container using the predefined
-image that is [set up in `.gitlab-ci.yml`][yaml] and in accordance in
+image that is [set up in `.alloy-ci.json`][json] and in accordance in
 [`config.toml`][toml].
 
 That way you can have a simple and reproducible build environment that can also
@@ -21,7 +21,7 @@ The Docker executor divides the build into multiple steps:
 1. **Pre-build**: Clone, restore cache and download artifacts from previous
    stages. This is run on a special Docker Image.
 1. **Build**: User build. This is run on the user-provided docker image.
-1. **Post-build**: Create cache, upload artifacts to GitLab. This is run on
+1. **Post-build**: Create cache, upload artifacts to AlloyCI. This is run on
    a special Docker Image.
 
 The special Docker Image is based on [Alpine Linux] and contains all the tools
@@ -41,7 +41,7 @@ create a container on which your build will run.
 
 If you don't specify the namespace, Docker implies `library` which includes all
 [official images](https://hub.docker.com/u/library/). That's why you'll see
-many times the `library` part omitted in `.gitlab-ci.yml` and `config.toml`.
+many times the `library` part omitted in `.alloy-ci.json` and `config.toml`.
 For example you can define an image like `image: ruby:2.1`, which is a shortcut
 for `image: library/ruby:2.1`.
 
@@ -61,9 +61,6 @@ run a database container, e.g., `mysql`. It's easier and faster to use an
 existing image and run it as an additional container than install `mysql` every
 time the project is built.
 
-You can see some widely used services examples in the relevant documentation of
-[CI services examples](https://gitlab.com/gitlab-org/gitlab-ce/tree/master/doc/ci/services/README.md).
-
 ### How is service linked to the build
 
 To better understand how the container linking works, read
@@ -78,44 +75,54 @@ The service container for MySQL will be accessible under the hostname `mysql`.
 So, in order to access your database service you have to connect to the host
 named `mysql` instead of a socket or `localhost`.
 
-## Define image and services from `.gitlab-ci.yml`
+## Define image and services from `.alloy-ci.json`
 
 You can simply define an image that will be used for all jobs and a list of
 services that you want to use during build time.
 
-```yaml
-image: ruby:2.2
-
-services:
-  - postgres:9.3
-
-before_script:
-  - bundle install
-
-test:
-  script:
-  - bundle exec rake spec
+```json
+{
+  "image": "ruby:2.2",
+  "services": [
+    "postgres:9.3"
+  ],
+  "before_script": [
+    "bundle install"
+  ],
+  "test": {
+    "script": [
+      "bundle exec rake spec"
+    ]
+  }
+}
 ```
 
 It is also possible to define different images and services per job:
 
-```yaml
-before_script:
-  - bundle install
-
-test:2.1:
-  image: ruby:2.1
-  services:
-  - postgres:9.3
-  script:
-  - bundle exec rake spec
-
-test:2.2:
-  image: ruby:2.2
-  services:
-  - postgres:9.4
-  script:
-  - bundle exec rake spec
+```json
+{
+  "before_script": [
+    "bundle install"
+  ],
+  "test:2.1": {
+    "image": "ruby:2.1",
+    "services": [
+      "postgres:9.3"
+    ],
+    "script": [
+      "bundle exec rake spec"
+    ]
+  },
+  "test:2.2": {
+    "image": "ruby:2.2",
+    "services": [
+      "postgres:9.4"
+    ],
+    "script": [
+      "bundle exec rake spec"
+    ]
+  }
+}
 ```
 
 ## Define image and services in `config.toml`
@@ -129,24 +136,24 @@ Look for the `[runners.docker]` section:
 ```
 
 The image and services defined this way will be added to all builds run by
-that Runner, so even if you don't define an `image` inside `.gitlab-ci.yml`,
+that Runner, so even if you don't define an `image` inside `.alloy-ci.json`,
 the one defined in `config.toml` will be used.
 
 ## Define an image from a private Docker registry
 
-Starting with GitLab Runner 0.6.0, you are able to define images located to
+You can also define images located on
 private registries that could also require authentication.
 
-All you have to do is be explicit on the image definition in `.gitlab-ci.yml`.
+All you have to do is be explicit on the image definition in `.alloy-ci.json`.
 
-```yaml
+```json
 image: my.registry.tld:5000/namepace/image:tag
 ```
 
-In the example above, GitLab Runner will look at `my.registry.tld:5000` for the
+In the example above, AlloyCI Runner will look at `my.registry.tld:5000` for the
 image `namespace/image:tag`.
 
-If the repository is private you need to authenticate your GitLab Runner in the
+If the repository is private you need to authenticate your AlloyCI Runner in the
 registry. Read more on [using a private Docker registry][runner-priv-reg].
 
 ## Accessing the services
@@ -155,9 +162,9 @@ Let's say that you need a Wordpress instance to test some API integration with
 your application.
 
 You can then use for example the [tutum/wordpress][] as a service image in your
-`.gitlab-ci.yml`:
+`.alloy-ci.json`:
 
-```yaml
+```json
 services:
 - tutum/wordpress:latest
 ```
@@ -166,7 +173,7 @@ When the build is run, `tutum/wordpress` will be started first and you will have
 access to it from your build container under the hostname `tutum__wordpress`
 and `tutum-wordpress`.
 
-The GitLab Runner creates two alias hostnames for the service that you can use
+The AlloyCI Runner creates two alias hostnames for the service that you can use
 alternatively. The aliases are taken from the image name following these rules:
 
 1. Everything after `:` is stripped
@@ -174,16 +181,16 @@ alternatively. The aliases are taken from the image name following these rules:
 2. For the second alias, the slash (`/`) is replaced with a single dash (`-`)
 
 Using a private service image will strip any port given and apply the rules as
-described above. A service `registry.gitlab-wp.com:4999/tutum/wordpress` will
-result in hostname `registry.gitlab-wp.com__tutum__wordpress` and
-`registry.gitlab-wp.com-tutum-wordpress`.
+described above. A service `registry.alloy-wp.com:4999/tutum/wordpress` will
+result in hostname `registry.alloy-wp.com__tutum__wordpress` and
+`registry.alloy-wp.com-tutum-wordpress`.
 
 ## Configuring services
 
 Many services accept environment variables which allow you to easily change
 database names or set account names depending on the environment.
 
-GitLab Runner 0.5.0 and up passes all YAML-defined variables to the created
+AlloyCI Runner 1.0 and up passes all JSON-defined variables to the created
 service containers.
 
 For all possible configuration variables check the documentation of each image
@@ -213,27 +220,25 @@ This is an example `config.toml` to mount the data directory for the official My
 
 ## Build directory in service
 
-Since version 1.5 GitLab Runner mounts a `/builds` directory to all shared services.
+AlloyCI Runner mounts a `/builds` directory to all shared services.
 
-See an issue: https://gitlab.com/gitlab-org/gitlab-runner/issues/1520
+See an issue: https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1520
 
 ### PostgreSQL service example
 
 See the specific documentation for
-[using PostgreSQL as a service](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/services/postgres.md).
+[using PostgreSQL as a service](https://github.com/AlloyCI/alloy_ci/tree/master/doc/services/postgres.md).
 
 ### MySQL service example
 
 See the specific documentation for
-[using MySQL as a service](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/ci/services/mysql.md).
+[using MySQL as a service](https://github.com/AlloyCI/alloy_ci/tree/master/doc/services/mysql.md).
 
 ### The services health check
 
-After the service is started, GitLab Runner waits some time for the service to
+After the service is started, AlloyCI Runner waits some time for the service to
 be responsive. Currently, the Docker executor tries to open a TCP connection to
 the first exposed service in the service container.
-
-You can see how it is implemented [in this Dockerfile][service-file].
 
 ## The builds and cache storage
 
@@ -293,18 +298,22 @@ First, configure your Runner (config.toml) to run in `privileged` mode:
     privileged = true
 ```
 
-Then, make your build script (`.gitlab-ci.yml`) to use Docker-in-Docker
+Then, make your build script (`.alloy-ci.json`) to use Docker-in-Docker
 container:
 
-```bash
-image: docker:git
-services:
-- docker:dind
-
-build:
-  script:
-  - docker build -t my-image .
-  - docker push my-image
+```json
+{
+  "image": "docker:git",
+  "services": [
+    "docker:dind"
+  ],
+  "build": {
+    "script": [
+      "docker build -t my-image .",
+      "docker push my-image"
+    ]
+  }
+}
 ```
 
 ## The ENTRYPOINT
@@ -358,15 +367,20 @@ Consider the following example:
         privileged = true
     ```
 
-5. In your project use the following `.gitlab-ci.yml`:
+5. In your project use the following `.alloy-ci.json`:
 
-    ```yaml
-    variables:
-      BUILD_IMAGE: my.image
-    build:
-      image: my/docker-build:image
-      script:
-      - Dummy Script
+    ```json
+    {
+      "variables": {
+        "BUILD_IMAGE": "my.image"
+      },
+      "build": {
+        "image": "my/docker-build:image",
+        "script": [
+          "Dummy Script"
+        ]
+      }
+    }
     ```
 
 This is just one of the examples. With this approach the possibilities are
@@ -460,24 +474,10 @@ Pulling docker image registry.tld/my/image:latest ...
 ERROR: Build failed: Error: image registry.tld/my/image:latest not found
 ```
 
-> **Note:**
-For versions prior to `v1.8`, when using the `always` pull policy, it could
-fall back to local copy of an image and print a warning:
->
-> ```
-> Pulling docker image registry.tld/my/image:latest ...
-> WARNING: Cannot pull the latest version of image registry.tld/my/image:latest : Error: image registry.tld/my/image:latest not found
-> WARNING: Locally found image will be used instead.
-> ```
->
-That is changed in version `v1.8`. To understand why we changed this and
-how incorrect usage of may be revealed please look into issue
-[#1905](https://gitlab.com/gitlab-org/gitlab-runner/issues/1905).
-
 **When to use this pull policy?**
 
 This pull policy should be used if your Runner is publicly available
-and configured as a shared Runner in your GitLab instance. It is the
+and configured as a shared Runner in your AlloyCI instance. It is the
 only pull policy that can be considered as secure when the Runner will
 be used with private images.
 
@@ -503,7 +503,7 @@ ERROR: Build failed: Error: image local_image:latest not found
 ## Docker vs Docker-SSH (and Docker+Machine vs Docker-SSH+Machine)
 
 > **Note**:
-Starting with GitLab Runner 10.0, both docker-ssh and docker-ssh+machine executors
+Starting with AlloyCI Runner 1.0, both docker-ssh and docker-ssh+machine executors
 are **deprecated** and will be removed in one of the upcoming releases.
 
 We provided a support for a special type of Docker executor, namely Docker-SSH
@@ -524,11 +524,10 @@ This executor is no longer maintained and will be removed in near future.
 [postgres-hub]: https://registry.hub.docker.com/u/library/postgres/
 [mysql-hub]: https://registry.hub.docker.com/u/library/mysql/
 [runner-priv-reg]: ../configuration/advanced-configuration.md#using-a-private-container-registry
-[yaml]: http://doc.gitlab.com/ce/ci/yaml/README.html
+[json]: https://github.com/AlloyCI/alloy_ci/tree/master/doc/json/README.md
 [toml]: ../commands/README.md#configuration-file
 [alpine linux]: https://alpinelinux.org/
-[special-build]: https://gitlab.com/gitlab-org/gitlab-runner/tree/master/dockerfiles/build
-[service-file]: https://gitlab.com/gitlab-org/gitlab-runner/tree/master/dockerfiles/service
+[special-build]: https://gitlab.com/AlloyCI/alloy-runner/tree/master/dockerfiles/build
 [privileged]: https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
 [entry]: https://docs.docker.com/engine/reference/run/#entrypoint-default-command-to-execute-at-runtime
-[secpull]: ../security/index.md##usage-of-private-docker-images-with-if-not-present-pull-policy
+[secpull]: ../security/README.md##usage-of-private-docker-images-with-if-not-present-pull-policy

@@ -1,8 +1,4 @@
----
-last_updated: 2017-10-12
----
-
-# Install GitLab Runner using the official GitLab repositories
+# Install AlloyCI Runner using the official AlloyCI repositories
 
 We provide packages for the currently supported versions of Debian, Ubuntu, Mint, RHEL, Fedora, and CentOS.
 
@@ -35,21 +31,16 @@ using the Runner. [Read how to install Docker for your distribution](https://doc
 
 ## Installing the Runner
 
-CAUTION: **Important:**
-If you are using or upgrading from a version prior to GitLab Runner 10, read how
-to [upgrade to the new version](#upgrading-to-gitlab-runner-10). If you want
-to install a version prior to GitLab Runner 10, [visit the old docs](old.md).
-
 To install the Runner:
 
-1. Add GitLab's official repository:
+1. Add AlloyCI's official repository:
 
     ```bash
     # For Debian/Ubuntu/Mint
-    curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | sudo bash
+    curl -L https://packagecloud.io/install/repositories/alloyci/alloy-runner/script.deb.sh | sudo bash
 
     # For RHEL/CentOS/Fedora
-    curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash
+    curl -L https://packagecloud.io/install/repositories/alloyci/alloy-runner/script.rpm.sh | sudo bash
     ```
 
     >**Note:**
@@ -65,44 +56,44 @@ To install the Runner:
     be done manually or automatically - will be done using the same source:
     >
     ```bash
-    cat > /etc/apt/preferences.d/pin-gitlab-runner.pref <<EOF
-    Explanation: Prefer GitLab provided packages over the Debian native ones
-    Package: gitlab-runner
-    Pin: origin packages.gitlab.com
+    cat > /etc/apt/preferences.d/pin-alloy-runner.pref <<EOF
+    Explanation: Prefer AlloyCI provided packages over the Debian native ones
+    Package: alloy-runner
+    Pin: origin packagecloud.io
     Pin-Priority: 1001
     EOF
     ```
 
-1. Install the latest version of GitLab Runner, or skip to the next step to
+1. Install the latest version of AlloyCI Runner, or skip to the next step to
    install a specific version:
 
     ```bash
     # For Debian/Ubuntu/Mint
-    sudo apt-get install gitlab-runner
+    sudo apt-get install alloy-runner
 
     # For RHEL/CentOS/Fedora
-    sudo yum install gitlab-runner
+    sudo yum install alloy-runner
     ```
 
-1. To install a specific version of GitLab Runner:
+1. To install a specific version of AlloyCI Runner:
 
     ```bash
     # for DEB based systems
-    apt-cache madison gitlab-runner
-    sudo apt-get install gitlab-runner=10.0.0
+    apt-cache madison alloy-runner
+    sudo apt-get install alloy-runner=1.0.0
 
     # for RPM based systems
-    yum list gitlab-runner --showduplicates | sort -r
-    sudo yum install gitlab-runner-10.0.0-1
+    yum list alloy-runner --showduplicates | sort -r
+    sudo yum install alloy-runner-1.0.0-1
     ```
 
-1. [Register the Runner](../register/index.md)
+1. [Register the Runner](../register/README.md)
 
 After completing the step above, the Runner should be started already being
 ready to be used by your projects!
 
 Make sure that you read the [FAQ](../faq/README.md) section which describes
-some of the most common problems with GitLab Runner.
+some of the most common problems with AlloyCI Runner.
 
 ## Updating the Runner
 
@@ -111,42 +102,15 @@ Simply execute to install latest version:
 ```bash
 # For Debian/Ubuntu/Mint
 sudo apt-get update
-sudo apt-get install gitlab-runner
+sudo apt-get install alloy-runner
 
 # For RHEL/CentOS/Fedora
 sudo yum update
-sudo yum install gitlab-runner
+sudo yum install alloy-runner
 ```
 ## Manually download packages
 
 You can manually download the packages from the following URL:
-<https://packages.gitlab.com/runner/gitlab-runner>
-
-## Upgrading to GitLab Runner 10
-
-To upgrade GitLab Runner from a version prior to 10.0:
-
-1. Remove the old repository:
-
-    ```
-    # For Debian/Ubuntu/Mint
-    sudo rm /etc/apt/sources.list.d/runner_gitlab-ci-multi-runner.list
-
-    # For RHEL/CentOS/Fedora
-    sudo rm /etc/yum.repos.d/runner_gitlab-ci-multi-runner.repo
-    ```
-
-1. Follow the same steps when [installing the Runner](#installing-the-runner),
-   **without registering it** and using the new repository.
-
-1. For RHEL/CentOS/Fedora, run:
-
-    ```
-    sudo /usr/share/gitlab-runner/post-install
-    ```
-
-    CAUTION: **Important:** If you don't run the above command, you will be left
-    with no service file. Follow [issue #2786](https://gitlab.com/gitlab-org/gitlab-runner/issues/2786)
-    for more information.
+<https://packagecloud.io/alloyci/alloy-runner/>
 
 [docker executor]: ../executors/docker.md

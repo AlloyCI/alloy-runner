@@ -1,6 +1,6 @@
-# Run GitLab Runner on a Kubernetes cluster
+# Run AlloyCI Runner on a Kubernetes cluster
 
-To get started with the GitLab CI Runner on Kubernetes you need to define
+To get started with the AlloyCI Runner on Kubernetes you need to define
 resources that you can then push to the cluster with `kubectl`.
 
 A recommended approach to this is to create a `ConfigMap` in Kubernetes such as
