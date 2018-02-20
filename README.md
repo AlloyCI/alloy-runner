@@ -1,13 +1,13 @@
-# Alloy Runner
+# AlloyCI Runner
 
-This is the repository of the official Alloy Runner written in Go, forked from the GitLab Runner project.
+This is the repository of the official AlloyCI Runner written in Go, forked from the GitLab Runner project.
 It runs tests and sends the results to AlloyCI.
 [AlloyCI](https://alloy-ci.com) is the open-source
 continuous integration service that coordinates the testing.
 
 ![Build Status](https://gitlab.com/AlloyCI/alloy-runner/badges/master/build.svg)
-![deb package](https://img.shields.io/badge/deb-packagecloud.io-844fec.svg)
-![rpm package](https://img.shields.io/badge/rpm-packagecloud.io-844fec.svg)
+[![deb package](https://img.shields.io/badge/deb-packagecloud.io-844fec.svg)](https://packagecloud.io/alloyci/alloy-runner/)
+[![rpm package](https://img.shields.io/badge/rpm-packagecloud.io-844fec.svg)](https://packagecloud.io/alloyci/alloy-runner/)
 
 ## Documentation
 
