@@ -140,6 +140,7 @@ ifneq (, $(shell docker info))
 		$(PKG)/apps/gitlab-runner-helper
 
 	# Build docker images
+	docker run --rm --privileged multiarch/qemu-user-static:register --reset
 	docker build -t gitlab/gitlab-runner-helper:arm-$(REVISION) -f dockerfiles/build/Dockerfile.arm dockerfiles/build
 	-docker rm -f gitlab-runner-prebuilt-arm-$(REVISION)
 	docker create --name=gitlab-runner-prebuilt-arm-$(REVISION) gitlab/gitlab-runner-helper:arm-$(REVISION) /bin/sh
